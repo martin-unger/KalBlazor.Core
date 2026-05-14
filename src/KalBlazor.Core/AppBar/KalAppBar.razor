@@ -1,0 +1,8 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<header @attributes="FilteredAdditionalAttributes" class="@CssClass">
+    <CascadingValue Value="AppBarContext" IsFixed="false">
+        @ChildContent
+    </CascadingValue>
+</header>

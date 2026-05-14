@@ -1,0 +1,20 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<button
+    type="button"
+    @attributes="FilteredAdditionalAttributes"
+    class="@CssClass"
+    aria-expanded="@IsExpandedText"
+    aria-label="@Label"
+    @onclick="ToggleAsync">
+    @if (ChildContent is null)
+    {
+        <KalAppBarIcon />
+        <KalAppBarIconToggled />
+    }
+    else
+    {
+        @ChildContent
+    }
+</button>

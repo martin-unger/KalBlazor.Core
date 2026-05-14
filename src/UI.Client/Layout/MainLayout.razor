@@ -1,0 +1,44 @@
+﻿@inherits LayoutComponentBase
+
+<KalLayout>
+    <KalAppBar Fixed>
+        <KalAppBarToggle HorizontalAlignment="KalHorizontalAlignment.Right"/>
+        <KalCollapsible HorizontalAlignment="KalHorizontalAlignment.Left">
+            <div>Test 1</div>
+            <div>Test 2</div>
+            <div>Test 3</div>
+            <div>Test 4</div>
+            <KalDrawerTrigger TargetId="left-menu">
+                Links öffnen
+            </KalDrawerTrigger>
+
+            <KalDrawerTrigger TargetName="right-menu">
+                Rechts öffnen
+            </KalDrawerTrigger>
+        </KalCollapsible>
+    </KalAppBar>
+    
+    <KalDrawer Id="left-menu" Variant="KalDrawerVariant.Overlay">
+        <KalDrawerHeader>Header</KalDrawerHeader>
+        <KalDrawerContent>...</KalDrawerContent>
+        <KalDrawerFooter>Footer</KalDrawerFooter>
+    </KalDrawer>
+
+    <KalDrawer Name="right-menu" Side="KalDrawerSide.Right" Variant="KalDrawerVariant.Clipped">
+        Rechts
+    </KalDrawer>
+
+    <KalAppMainContent>
+        @Body
+        <KalFooterContent>
+            <div>Footer content</div>
+        </KalFooterContent>
+    </KalAppMainContent>
+</KalLayout>  
+
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

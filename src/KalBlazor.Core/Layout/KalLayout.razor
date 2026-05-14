@@ -1,0 +1,9 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<div @attributes="FilteredAdditionalAttributes" class="@CssClass">
+    <CascadingValue Value="DrawerContext" IsFixed="false">
+        @ChildContent
+        <div class="@DrawerOverlayClass" @onclick="CloseDrawers" aria-hidden="true"></div>
+    </CascadingValue>
+</div>

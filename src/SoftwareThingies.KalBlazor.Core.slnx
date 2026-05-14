@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="KalBlazor.Core\KalBlazor.Core.csproj" />
+  <Project Path="UI.Client\UI.Client.csproj" />
+  <Project Path="UI\UI.csproj" />
+</Solution>

@@ -1,0 +1,11 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<button
+    type="button"
+    aria-controls="@TargetId"
+    @attributes="FilteredAdditionalAttributes"
+    class="@CssClass"
+    @onclick="TriggerAsync">
+    @ChildContent
+</button>

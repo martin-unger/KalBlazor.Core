@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <RootNamespace>SoftwareThingies.UI</RootNamespace>
+        <PackageId>UI</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\UI.Client\UI.Client.csproj" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Assets\Fonts\**\*.*">
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
+    <Target Name="CopyFontAssets" BeforeTargets="ResolveProjectStaticWebAssets">
+        <ItemGroup>
+            <FontAssets Include="$(MSBuildProjectDirectory)\Assets\Fonts\**\*.otf"/>
+            <FontAssets Include="$(MSBuildProjectDirectory)\Assets\Fonts\**\*.ttf"/>
+            <FontAssets Include="$(MSBuildProjectDirectory)\Assets\Fonts\**\*.woff"/>
+            <FontAssets Include="$(MSBuildProjectDirectory)\Assets\Fonts\**\*.woff2"/>
+            <FontAssets Include="$(MSBuildProjectDirectory)\Assets\Fonts\**\*.eot"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(FontAssets)"
+              DestinationFiles="@(FontAssets->'$(MSBuildProjectDirectory)\wwwroot\fonts\%(RecursiveDir)%(Filename)%(Extension)')"
+              SkipUnchangedFiles="true"/>
+        <ItemGroup>
+            <Content Include="wwwroot\fonts\**\*.otf"/>
+            <Content Include="wwwroot\fonts\**\*.ttf"/>
+            <Content Include="wwwroot\fonts\**\*.woff"/>
+            <Content Include="wwwroot\fonts\**\*.woff2"/>
+            <Content Include="wwwroot\fonts\**\*.eot"/>
+        </ItemGroup>
+    </Target>
+
+    <Target Name="BuildTailwindCss" BeforeTargets="ComputeStaticWebAssets">
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="bun install --frozen-lockfile" Condition="!Exists('$(MSBuildProjectDirectory)/node_modules/.bin/tailwindcss')"/>
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="bun run build:css"/>
+    </Target>
+
+</Project>

@@ -1,0 +1,11 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<aside
+    id="@Id"
+    role="dialog"
+    aria-hidden="@IsHidden"
+    @attributes="FilteredAdditionalAttributes"
+    class="@CssClass">
+    @ChildContent
+</aside>
