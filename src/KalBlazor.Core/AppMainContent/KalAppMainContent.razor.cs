@@ -14,7 +14,7 @@ public partial class KalAppMainContent : IDisposable
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
-    protected override string AdditionalClass =>
+    protected override string DynamicClass =>
         DrawerContext is null
             ? string.Empty
             : $"{KalDrawerOffsetClass.GetMarginLeft(DrawerContext.LeftContentOffsetWidth)} {KalDrawerOffsetClass.GetMarginRight(DrawerContext.RightContentOffsetWidth)}".Trim();

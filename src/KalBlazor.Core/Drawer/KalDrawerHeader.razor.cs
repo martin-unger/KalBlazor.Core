@@ -14,5 +14,5 @@ public partial class KalDrawerHeader
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
-    protected override string AdditionalClass => DrawerContext?.HasAppBar == true ? "min-h-14" : string.Empty;
+    protected override string DynamicClass => DrawerContext?.HasAppBar == true ? "min-h-14" : string.Empty;
 }

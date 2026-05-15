@@ -6,7 +6,7 @@ public partial class KalAppBar : IDisposable
 {
     protected override string ComponentClass => "kal-app-bar";
 
-    protected override string DefaultClass => "w-full min-h-14 px-4 flex flex-wrap items-center justify-between gap-x-3 bg-amber-300 text-slate-950 border-slate-200 shadow-sm transition-[margin-left,margin-right,left,right] duration-200 ease-out";
+    protected override string DefaultClass => "w-full min-h-14 px-4 flex flex-wrap items-center justify-between gap-x-3 bg-[var(--kal-app-bar-background,var(--color-amber-300))] text-[var(--kal-app-bar-foreground,var(--color-slate-950))] border-[var(--kal-app-bar-border,var(--color-slate-200))] shadow-sm transition-[margin-left,margin-right,left,right] duration-200 ease-out";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -22,7 +22,7 @@ public partial class KalAppBar : IDisposable
 
     private KalAppBarContext AppBarContext { get; } = new();
 
-    protected override string AdditionalClass => $"{PositionClass} {WrapClass} {DrawerMarginClass} {FixedClass}".Trim();
+    protected override string DynamicClass => $"{PositionClass} {WrapClass} {DrawerMarginClass} {FixedClass}".Trim();
 
     private string PositionClass
     {

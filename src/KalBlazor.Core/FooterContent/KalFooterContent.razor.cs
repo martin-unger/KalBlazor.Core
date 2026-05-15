@@ -14,5 +14,5 @@ public partial class KalFooterContent
     [Parameter]
     public bool FixedWhenContentIsShort { get; set; }
 
-    protected override string AdditionalClass => FixedWhenContentIsShort ? "sticky bottom-0 z-40" : string.Empty;
+    protected override string DynamicClass => FixedWhenContentIsShort ? "sticky bottom-0 z-40" : string.Empty;
 }

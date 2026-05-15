@@ -20,7 +20,7 @@ public partial class KalAppBarToggle
     [CascadingParameter]
     internal KalAppBarContext? AppBarContext { get; set; }
 
-    protected override string AdditionalClass => HorizontalAlignment == KalHorizontalAlignment.Right ? "ml-auto justify-self-end" : "mr-auto justify-self-start";
+    protected override string DynamicClass => HorizontalAlignment == KalHorizontalAlignment.Right ? "ml-auto justify-self-end" : "mr-auto justify-self-start";
 
     protected override void OnParametersSet()
     {

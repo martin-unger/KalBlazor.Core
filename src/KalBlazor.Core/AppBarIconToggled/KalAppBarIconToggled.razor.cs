@@ -14,7 +14,7 @@ public partial class KalAppBarIconToggled
     [CascadingParameter]
     internal KalAppBarContext? AppBarContext { get; set; }
 
-    protected override string AdditionalClass
+    protected override string DynamicClass
     {
         get
         {

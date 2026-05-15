@@ -5,10 +5,16 @@ namespace SoftwareThingies.KalBlazor.Core;
 public abstract class BaseComponent : ComponentBase
 {
     /// <summary>
-    /// This class overrides the default class.
+    /// Replaces the component default classes.
     /// </summary>
     [Parameter]
     public string? Class { get; set; }
+
+    /// <summary>
+    /// Additional classes appended to the effective component classes.
+    /// </summary>
+    [Parameter]
+    public string? AdditionalClass { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
@@ -17,7 +23,7 @@ public abstract class BaseComponent : ComponentBase
 
     protected abstract string DefaultClass { get; }
 
-    protected virtual string AdditionalClass => string.Empty;
+    protected virtual string DynamicClass => string.Empty;
 
     protected IReadOnlyDictionary<string, object>? FilteredAdditionalAttributes =>
         AdditionalAttributes?
@@ -28,13 +34,17 @@ public abstract class BaseComponent : ComponentBase
     {
         get
         {
-            var consumerClass = !string.IsNullOrWhiteSpace(Class)
+            var explicitClass = !string.IsNullOrWhiteSpace(Class)
                 ? Class
                 : TryGetAttributeClass(out var attributeClass)
                     ? attributeClass
-                    : $"{DefaultClass} {AdditionalClass}".Trim();
+                    : string.Empty;
 
-            return $"{ComponentClass} {consumerClass}".Trim();
+            var effectiveClass = !string.IsNullOrWhiteSpace(explicitClass)
+                ? explicitClass
+                : $"{DefaultClass} {DynamicClass}".Trim();
+
+            return $"{ComponentClass} {effectiveClass} {AdditionalClass}".Trim();
         }
     }
 

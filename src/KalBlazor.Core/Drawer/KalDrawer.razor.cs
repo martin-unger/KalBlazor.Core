@@ -29,7 +29,7 @@ public partial class KalDrawer : IDisposable
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
-    protected override string AdditionalClass => $"{SideClass} {VerticalClass} {ZIndexClass} {WidthClass} {ShadowClass} {StateClass}".Trim();
+    protected override string DynamicClass => $"{SideClass} {VerticalClass} {ZIndexClass} {WidthClass} {ShadowClass} {StateClass}".Trim();
 
     private bool IsOpen => DrawerContext?.IsOpen(Key) == true;
 
