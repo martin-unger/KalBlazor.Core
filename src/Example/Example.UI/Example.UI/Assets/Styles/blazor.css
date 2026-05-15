@@ -1,0 +1,38 @@
+@layer base {
+    html,
+    body {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+    }
+
+    a {
+        color: inherit;
+    }
+
+    h1:focus {
+        outline: none;
+    }
+}
+
+@layer components {
+    .valid.modified:not([type="checkbox"]) {
+        outline: 1px solid #26b050;
+    }
+
+    .invalid {
+        outline: 1px solid #e50000;
+    }
+
+    .validation-message {
+        color: #e50000;
+    }
+
+    .blazor-error-boundary {
+        background: #b32121;
+        color: white;
+        padding: 1rem;
+    }
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred.";
+    }
+}

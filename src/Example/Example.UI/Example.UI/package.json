@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss -i ./Assets/Styles/app.css -o ./wwwroot/app.css",
+    "watch:css": "tailwindcss -i ./Assets/Styles/app.css -o ./wwwroot/app.css --watch=always",
+    "watch": "concurrently -k -n tailwind,dotnet -c cyan,green \"bun run watch:css\" \"dotnet watch run --launch-profile https\""
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "concurrently": "^9.2.1",
+    "tailwindcss": "^4.1.17"
+  }
+}
