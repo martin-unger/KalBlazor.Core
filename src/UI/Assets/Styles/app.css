@@ -5,8 +5,6 @@
 @source "../../../UI.Client";
 @source "../../../KalBlazor.Core";
 
-
-
 @theme {
   --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   --color-brand: hsl(1, 75%, 42%);
