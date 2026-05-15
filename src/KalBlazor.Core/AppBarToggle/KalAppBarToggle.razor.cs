@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppBarToggle
 {
+    protected override string ComponentClass => "kal-app-bar-toggle";
+
     protected override string DefaultClass => "relative order-10 inline-flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-md text-slate-950 md:hidden ";
 
     [Parameter]

@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalFooterContent
 {
+    protected override string ComponentClass => "kal-footer-content";
+
     protected override string DefaultClass => "mt-auto w-full text-center pt-2.5";
 
     [Parameter]

@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalDrawerHeader
 {
+    protected override string ComponentClass => "kal-drawer-header";
+
     protected override string DefaultClass => "shrink-0 border-b border-slate-200 px-4 py-3";
 
     [Parameter]

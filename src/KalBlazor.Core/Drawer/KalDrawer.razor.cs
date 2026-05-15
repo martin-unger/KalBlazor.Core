@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalDrawer : IDisposable
 {
+    protected override string ComponentClass => "kal-drawer";
+
     protected override string DefaultClass => "fixed flex w-screen flex-col overflow-y-auto bg-white text-slate-950 transition-transform duration-200 ease-out";
 
     [Parameter]

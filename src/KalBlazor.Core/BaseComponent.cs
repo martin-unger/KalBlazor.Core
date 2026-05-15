@@ -13,6 +13,8 @@ public abstract class BaseComponent : ComponentBase
     [Parameter(CaptureUnmatchedValues = true)]
     public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
+    protected virtual string ComponentClass => string.Empty;
+
     protected abstract string DefaultClass { get; }
 
     protected virtual string AdditionalClass => string.Empty;
@@ -26,12 +28,13 @@ public abstract class BaseComponent : ComponentBase
     {
         get
         {
-            if (!string.IsNullOrWhiteSpace(Class))
-            {
-                return Class;
-            }
+            var consumerClass = !string.IsNullOrWhiteSpace(Class)
+                ? Class
+                : TryGetAttributeClass(out var attributeClass)
+                    ? attributeClass
+                    : $"{DefaultClass} {AdditionalClass}".Trim();
 
-            return TryGetAttributeClass(out var attributeClass) ? attributeClass : $"{DefaultClass} {AdditionalClass}".Trim();
+            return $"{ComponentClass} {consumerClass}".Trim();
         }
     }
 

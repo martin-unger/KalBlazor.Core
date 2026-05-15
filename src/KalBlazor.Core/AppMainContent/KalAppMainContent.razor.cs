@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppMainContent : IDisposable
 {
+    protected override string ComponentClass => "kal-app-main-content";
+
     protected override string DefaultClass => "mx-auto px-4 transition-[margin-left,margin-right] duration-200 ease-out";
 
     [Parameter]

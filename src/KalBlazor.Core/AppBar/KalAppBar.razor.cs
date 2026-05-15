@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppBar : IDisposable
 {
+    protected override string ComponentClass => "kal-app-bar";
+
     protected override string DefaultClass => "w-full min-h-14 px-4 flex flex-wrap items-center justify-between gap-x-3 bg-amber-300 text-slate-950 border-slate-200 shadow-sm transition-[margin-left,margin-right,left,right] duration-200 ease-out";
 
     [Parameter]
