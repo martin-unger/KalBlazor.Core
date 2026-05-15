@@ -39,6 +39,7 @@ After a pull request is merged into `main`, GitHub Actions automatically:
 Direct commits to `main` should be disabled in the repository settings. If one is ever allowed, the release pipeline treats it as a patch release.
 
 The repository starts at version `0.0.0`. If no release tag exists yet, the pipeline uses the version currently stored in the project file as its baseline.
+Only changes below `src/KalBlazor.Core/` create a new package release. Changes that affect only demo applications, documentation, or repository metadata do not publish a new NuGet package.
 
 ## Pull request expectations
 
