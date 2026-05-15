@@ -1,0 +1,10 @@
+@namespace SoftwareThingies.KalBlazor.Core
+
+<HeadContent>
+    <script>
+        document.documentElement.classList.toggle(
+            'dark',
+            window.matchMedia('(prefers-color-scheme: dark)').matches
+        );
+    </script>
+</HeadContent>

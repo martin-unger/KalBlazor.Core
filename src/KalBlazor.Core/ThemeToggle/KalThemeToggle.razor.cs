@@ -3,7 +3,7 @@ using Microsoft.JSInterop;
 
 namespace SoftwareThingies.KalBlazor.Core;
 
-public partial class KalThemeToggle
+public partial class KalThemeToggle : IAsyncDisposable
 {
     protected override string ComponentClass => "kal-theme-toggle";
 
@@ -18,6 +18,8 @@ public partial class KalThemeToggle
     [Parameter]
     public string AriaLabel { get; set; } = "Dark Mode umschalten";
 
+    private IJSObjectReference? Module { get; set; }
+
     private bool IsDarkMode { get; set; }
 
     private string IsDarkModeText => IsDarkMode ? "true" : "false";
@@ -29,20 +31,28 @@ public partial class KalThemeToggle
             return;
         }
 
-        IsDarkMode = await JsRuntime.InvokeAsync<bool>("document.documentElement.classList.contains", "dark");
+        Module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/SoftwareThingies.KalBlazor.Core/kalTheme.js");
+
+        IsDarkMode = await Module.InvokeAsync<bool>("isDarkMode");
         StateHasChanged();
     }
 
     private async Task ToggleAsync()
     {
-        IsDarkMode = !IsDarkMode;
-
-        if (IsDarkMode)
+        if (Module is null)
         {
-            await JsRuntime.InvokeVoidAsync("document.documentElement.classList.add", "dark");
             return;
         }
 
-        await JsRuntime.InvokeVoidAsync("document.documentElement.classList.remove", "dark");
+        IsDarkMode = !IsDarkMode;
+        await Module.InvokeVoidAsync("setDarkMode", IsDarkMode);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (Module is not null)
+        {
+            await Module.DisposeAsync();
+        }
     }
 }

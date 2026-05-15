@@ -14,14 +14,16 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-.kal-app-bar {
-  --kal-app-bar-background: var(--color-brand);
-  --kal-app-bar-foreground: var(--color-white);
-  --kal-app-bar-border: var(--color-brand);
-}
+@layer components {
+  .kal-app-bar {
+    --kal-app-bar-background: var(--color-brand);
+    --kal-app-bar-foreground: var(--color-white);
+    --kal-app-bar-border: var(--color-brand);
+  }
 
-.dark .kal-app-bar {
-  --kal-app-bar-background: var(--color-slate-900);
-  --kal-app-bar-foreground: var(--color-slate-100);
-  --kal-app-bar-border: var(--color-slate-700);
+  .dark .kal-app-bar {
+    --kal-app-bar-background: var(--color-slate-900);
+    --kal-app-bar-foreground: var(--color-slate-100);
+    --kal-app-bar-border: var(--color-slate-700);
+  }
 }

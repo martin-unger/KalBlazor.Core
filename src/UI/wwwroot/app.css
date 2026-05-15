@@ -840,15 +840,17 @@
   font-display: swap;
   src: url("/fonts/NotoSans/NotoSans-Italic-Variable.ttf") format("truetype-variations");
 }
-.kal-app-bar {
-  --kal-app-bar-background: var(--color-brand);
-  --kal-app-bar-foreground: var(--color-white);
-  --kal-app-bar-border: var(--color-brand);
-}
-.dark .kal-app-bar {
-  --kal-app-bar-background: var(--color-slate-900);
-  --kal-app-bar-foreground: var(--color-slate-100);
-  --kal-app-bar-border: var(--color-slate-700);
+@layer components {
+  .kal-app-bar {
+    --kal-app-bar-background: var(--color-brand);
+    --kal-app-bar-foreground: var(--color-white);
+    --kal-app-bar-border: var(--color-brand);
+  }
+  .dark .kal-app-bar {
+    --kal-app-bar-background: var(--color-slate-900);
+    --kal-app-bar-foreground: var(--color-slate-100);
+    --kal-app-bar-border: var(--color-slate-700);
+  }
 }
 @property --tw-translate-x {
   syntax: "*";
