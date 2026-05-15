@@ -1,0 +1,21 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<button
+    type="button"
+    role="switch"
+    aria-checked="@IsDarkModeText"
+    aria-label="@AriaLabel"
+    @attributes="FilteredAdditionalAttributes"
+    class="@CssClass"
+    @onclick="ToggleAsync">
+    <span class="kal-theme-toggle-track relative inline-flex h-7 w-12 items-center rounded-full bg-slate-300 transition-colors duration-200 dark:bg-slate-700">
+        <span class="kal-theme-toggle-thumb inline-block h-5 w-5 translate-x-1 rounded-full bg-white shadow-sm transition-transform duration-200 dark:translate-x-6"></span>
+    </span>
+    @if (ChildContent is not null)
+    {
+        <span class="kal-theme-toggle-content">
+            @ChildContent
+        </span>
+    }
+</button>

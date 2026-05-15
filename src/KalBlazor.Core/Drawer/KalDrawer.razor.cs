@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalDrawer : IDisposable
 {
+    protected override string ComponentClass => "kal-drawer";
+
     protected override string DefaultClass => "fixed flex w-screen flex-col overflow-y-auto bg-white text-slate-950 transition-transform duration-200 ease-out";
 
     [Parameter]
@@ -27,7 +29,7 @@ public partial class KalDrawer : IDisposable
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
-    protected override string AdditionalClass => $"{SideClass} {VerticalClass} {ZIndexClass} {WidthClass} {ShadowClass} {StateClass}".Trim();
+    protected override string DynamicClass => $"{SideClass} {VerticalClass} {ZIndexClass} {WidthClass} {ShadowClass} {StateClass}".Trim();
 
     private bool IsOpen => DrawerContext?.IsOpen(Key) == true;
 

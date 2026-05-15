@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalDrawerTrigger
 {
+    protected override string ComponentClass => "kal-drawer-trigger";
+
     protected override string DefaultClass => "inline-flex items-center justify-center";
 
     [Parameter]

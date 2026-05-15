@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppBarIconToggled
 {
+    protected override string ComponentClass => "kal-app-bar-icon-toggled";
+
     protected override string DefaultClass => "absolute inset-0 flex items-center justify-end transition-opacity duration-150";
 
     [Parameter]
@@ -12,7 +14,7 @@ public partial class KalAppBarIconToggled
     [CascadingParameter]
     internal KalAppBarContext? AppBarContext { get; set; }
 
-    protected override string AdditionalClass
+    protected override string DynamicClass
     {
         get
         {

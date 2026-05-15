@@ -4,6 +4,8 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalLayout : IDisposable
 {
+    protected override string ComponentClass => "kal-layout";
+
     protected override string DefaultClass => "min-h-screen w-full flex flex-col bg-white text-slate-950";
 
     [Parameter]

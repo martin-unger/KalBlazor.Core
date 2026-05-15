@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Components;
 namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppBarIcon
-{   
+{
+    protected override string ComponentClass => "kal-app-bar-icon";
+   
     protected override string DefaultClass => "absolute inset-0 flex items-center transition-opacity duration-150";
 
     [Parameter]
@@ -12,7 +14,7 @@ public partial class KalAppBarIcon
     [CascadingParameter]
     internal KalAppBarContext? AppBarContext { get; set; }
 
-    protected override string AdditionalClass
+    protected override string DynamicClass
     {
         get
         {

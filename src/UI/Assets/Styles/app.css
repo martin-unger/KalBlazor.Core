@@ -1,28 +1,27 @@
 @import "tailwindcss";
 @import "./blazor.css";
+@import "./font.css";
 
 @source "../../../UI.Client";
 @source "../../../KalBlazor.Core";
 
-@font-face {
-  font-family: "Noto Sans";
-  font-style: normal;
-  font-weight: 100 900;
-  font-stretch: 62.5% 100%;
-  font-display: swap;
-  src: url("/fonts/NotoSans/NotoSans-Variable.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Noto Sans";
-  font-style: italic;
-  font-weight: 100 900;
-  font-stretch: 62.5% 100%;
-  font-display: swap;
-  src: url("/fonts/NotoSans/NotoSans-Italic-Variable.ttf") format("truetype-variations");
-}
-
 @theme {
   --font-sans: "Noto Sans", ui-sans-serif, system-ui, sans-serif;
   --color-brand: hsl(1, 75%, 42%);
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .kal-app-bar {
+    --kal-app-bar-background: var(--color-brand);
+    --kal-app-bar-foreground: var(--color-white);
+    --kal-app-bar-border: var(--color-brand);
+  }
+
+  .dark .kal-app-bar {
+    --kal-app-bar-background: var(--color-slate-900);
+    --kal-app-bar-foreground: var(--color-slate-100);
+    --kal-app-bar-border: var(--color-slate-700);
+  }
 }

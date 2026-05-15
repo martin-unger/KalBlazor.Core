@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+<KalThemeBootstrap />
+
 <KalLayout>
     <KalAppBar Fixed>
         <KalAppBarToggle HorizontalAlignment="KalHorizontalAlignment.Right"/>
@@ -15,6 +17,10 @@
             <KalDrawerTrigger TargetName="right-menu">
                 Rechts öffnen
             </KalDrawerTrigger>
+
+            <KalThemeToggle>
+                Dark Mode
+            </KalThemeToggle>
         </KalCollapsible>
     </KalAppBar>
     
