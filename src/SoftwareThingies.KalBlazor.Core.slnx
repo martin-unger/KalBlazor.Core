@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Example/">
+    <Project Path="Example/Example.UI/Example.UI.Client/Example.UI.Client.csproj" />
+    <Project Path="Example/Example.UI/Example.UI/Example.UI.csproj" />
+  </Folder>
   <Project Path="KalBlazor.Core\KalBlazor.Core.csproj" />
   <Project Path="UI.Client\UI.Client.csproj" />
   <Project Path="UI\UI.csproj" />

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Example.UI.Client\Example.UI.Client.csproj"/>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="10.0.7"/>
+    </ItemGroup>
+
+    <Target Name="BuildTailwindCss" BeforeTargets="ComputeStaticWebAssets">
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="bun install --frozen-lockfile" Condition="!Exists('$(MSBuildProjectDirectory)/node_modules/.bin/tailwindcss')"/>
+        <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="bun run build:css"/>
+    </Target>
+
+</Project>

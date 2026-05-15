@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@import "./blazor.css";
+
+@source "../../../Example.UI.Client";
+@source "../../../../../KalBlazor.Core";
