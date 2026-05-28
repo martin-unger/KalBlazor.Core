@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalDataGrid<TItem> : IDisposable
 {
-    private const string DefaultTableClass = "min-w-full border-collapse text-sm";
+    private const string DefaultTableClass = "w-full min-w-full border-collapse text-sm";
     private const string DefaultHeaderClass = "bg-slate-50";
     private const string DefaultHeaderRowClass = "border-b border-slate-200";
     private const string DefaultBodyClass = "divide-y divide-slate-200 bg-white";
     private const string DefaultRowClass = "transition-colors hover:bg-slate-50";
+    private const string DefaultFilterClass = "border-b border-slate-200 bg-white p-3";
+    private const string DefaultFilterInputClass = "w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition-colors placeholder:text-slate-400 focus:border-amber-500 focus:ring-2 focus:ring-amber-200";
 
     protected override string ComponentClass => "kal-data-grid";
 
@@ -24,6 +27,30 @@ public partial class KalDataGrid<TItem> : IDisposable
 
     [Parameter]
     public RenderFragment? Columns { get; set; }
+
+    [Parameter]
+    public bool ShowFilter { get; set; }
+
+    [Parameter]
+    public string FilterPlaceholder { get; set; } = "Filter...";
+
+    [Parameter]
+    public string? FilterText { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> FilterTextChanged { get; set; }
+
+    [Parameter]
+    public string? FilterClass { get; set; }
+
+    [Parameter]
+    public string? AdditionalFilterClass { get; set; }
+
+    [Parameter]
+    public string? FilterInputClass { get; set; }
+
+    [Parameter]
+    public string? AdditionalFilterInputClass { get; set; }
 
     /// <summary>
     /// Replaces the default table classes.
@@ -63,9 +90,15 @@ public partial class KalDataGrid<TItem> : IDisposable
 
     private bool IsBound => Items is not null && Columns is not null;
 
-    private IEnumerable<TItem> BoundItems => Items ?? [];
+    private IEnumerable<TItem> BoundItems => string.IsNullOrWhiteSpace(FilterText)
+        ? Items ?? []
+        : (Items ?? []).Where(ItemMatchesFilter);
 
     private string TableCssClass => $"{(string.IsNullOrWhiteSpace(TableClass) ? DefaultTableClass : TableClass)} {AdditionalTableClass}".Trim();
+
+    private string FilterCssClass => $"{(string.IsNullOrWhiteSpace(FilterClass) ? DefaultFilterClass : FilterClass)} {AdditionalFilterClass}".Trim();
+
+    private string FilterInputCssClass => $"{(string.IsNullOrWhiteSpace(FilterInputClass) ? DefaultFilterInputClass : FilterInputClass)} {AdditionalFilterInputClass}".Trim();
 
     private string HeaderCssClass => $"{(string.IsNullOrWhiteSpace(HeaderClass) ? DefaultHeaderClass : HeaderClass)} {AdditionalHeaderClass}".Trim();
 
@@ -74,6 +107,22 @@ public partial class KalDataGrid<TItem> : IDisposable
     private string BodyCssClass => $"{(string.IsNullOrWhiteSpace(BodyClass) ? DefaultBodyClass : BodyClass)} {AdditionalBodyClass}".Trim();
 
     private string RowCssClass => $"{(string.IsNullOrWhiteSpace(RowClass) ? DefaultRowClass : RowClass)} {AdditionalRowClass}".Trim();
+
+    private bool ItemMatchesFilter(TItem item)
+    {
+        return GridContext.Columns.Any(column =>
+            column.GetSearchText(item).Contains(FilterText!, StringComparison.CurrentCultureIgnoreCase));
+    }
+
+    private async Task OnFilterInput(ChangeEventArgs args)
+    {
+        FilterText = args.Value?.ToString();
+
+        if (FilterTextChanged.HasDelegate)
+        {
+            await FilterTextChanged.InvokeAsync(FilterText);
+        }
+    }
 
     protected override void OnInitialized()
     {

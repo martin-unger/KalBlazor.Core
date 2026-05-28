@@ -13,6 +13,19 @@
         </CascadingValue>
     }
 
+    @if (ShowFilter)
+    {
+        <div class="@FilterCssClass">
+            <input
+                class="@FilterInputCssClass"
+                type="search"
+                value="@FilterText"
+                placeholder="@FilterPlaceholder"
+                aria-label="@FilterPlaceholder"
+                @oninput="OnFilterInput" />
+        </div>
+    }
+
     <table class="@TableCssClass">
         @if (IsBound)
         {

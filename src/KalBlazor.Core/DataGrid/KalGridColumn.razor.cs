@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -94,6 +95,19 @@ public partial class KalGridColumn<TItem> : IDisposable
     private string HeaderText => !string.IsNullOrWhiteSpace(Title) ? Title : PropertyName;
 
     private string PropertyName => TryGetPropertyInfo(Property, out var property) ? property.Name : string.Empty;
+
+    internal string GetSearchText(TItem item)
+    {
+        if (Property is null)
+        {
+            return string.Empty;
+        }
+
+        var accessor = Property.Compile();
+        var value = accessor(item);
+
+        return Convert.ToString(value, CultureInfo.CurrentCulture) ?? string.Empty;
+    }
 
     internal RenderFragment RenderCell(TItem item)
     {
