@@ -2,10 +2,10 @@
 @import "./blazor.css";
 
 @source "../../../Example.UI.Client";
-@source "../../../../../KalBlazor.Core";
 @source "../../Components";
+@source "../../../../../KalBlazor.Core";
 
-@custom-variant dark (&:where(.dark, .dark *));
+/*@custom-variant dark (&:where(.dark, .dark *));*/
 
 @layer components {
     .kal-app-bar {
