@@ -5,9 +5,11 @@
 
     <KalDataGrid TItem="CustomerAccount"
                  Items="@Accounts"
-                 ShowFilter
-                 FilterPlaceholder="Accounts filtern..."
                  AdditionalClass="my-6">
+        <Filter>
+            <KalDataGridFilter Placeholder="Accounts filtern..." />
+        </Filter>
+
         <Columns>
             <KalGridColumn TItem="CustomerAccount"
                            Title="Kunde"

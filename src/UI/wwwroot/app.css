@@ -619,6 +619,9 @@
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
+  .gap-2 {
+    gap: calc(var(--spacing) * 2);
+  }
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
@@ -934,6 +937,16 @@
   .focus\:ring-amber-200 {
     &:focus {
       --tw-ring-color: var(--color-amber-200);
+    }
+  }
+  .disabled\:cursor-not-allowed {
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+  .disabled\:opacity-50 {
+    &:disabled {
+      opacity: 50%;
     }
   }
   .sm\:hidden {

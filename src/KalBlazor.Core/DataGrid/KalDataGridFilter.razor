@@ -1,0 +1,23 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<div @attributes="FilteredAdditionalAttributes" class="@CssClass">
+    <input
+        class="@InputCssClass"
+        type="search"
+        value="@FilterContext?.FilterText"
+        placeholder="@Placeholder"
+        aria-label="@Placeholder"
+        @oninput="OnInput" />
+
+    @if (ShowResetButton)
+    {
+        <button
+            class="@ResetButtonCssClass"
+            type="button"
+            disabled="@(!HasFilterText)"
+            @onclick="ResetAsync">
+            @ResetButtonText
+        </button>
+    }
+</div>

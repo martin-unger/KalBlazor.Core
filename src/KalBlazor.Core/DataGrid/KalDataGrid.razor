@@ -13,17 +13,24 @@
         </CascadingValue>
     }
 
-    @if (ShowFilter)
+    @if (Filter is not null || ShowFilter)
     {
-        <div class="@FilterCssClass">
-            <input
-                class="@FilterInputCssClass"
-                type="search"
-                value="@FilterText"
-                placeholder="@FilterPlaceholder"
-                aria-label="@FilterPlaceholder"
-                @oninput="OnFilterInput" />
-        </div>
+        <CascadingValue Value="@((IKalDataGridFilterContext)this)" IsFixed="false">
+            @if (Filter is not null)
+            {
+                @Filter
+            }
+            else
+            {
+                <KalDataGridFilter
+                    Class="@FilterClass"
+                    AdditionalClass="@AdditionalFilterClass"
+                    InputClass="@FilterInputClass"
+                    AdditionalInputClass="@AdditionalFilterInputClass"
+                    Placeholder="@FilterPlaceholder"
+                    ShowResetButton="false" />
+            }
+        </CascadingValue>
     }
 
     <table class="@TableCssClass">
