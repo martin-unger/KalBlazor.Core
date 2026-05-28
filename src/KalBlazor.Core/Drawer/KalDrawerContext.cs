@@ -4,14 +4,17 @@ internal sealed class KalDrawerContext
 {
     private readonly Dictionary<string, bool> _openStates = new(StringComparer.Ordinal);
     private readonly Dictionary<string, KalDrawerRegistration> _registrations = new(StringComparer.Ordinal);
-    private int _appBarCount;
-    private bool _appBarBottom;
+    private readonly Dictionary<Guid, KalAppBarRegistration> _appBars = [];
 
     public event Action? StateChanged;
 
-    public bool AppBarBottom => _appBarBottom;
+    public bool AppBarBottom => _appBars.Values.Any(appBar => appBar.Bottom);
 
-    public bool HasAppBar => _appBarCount > 0;
+    public bool HasAppBar => _appBars.Count > 0;
+
+    public bool HasFixedTopAppBar => _appBars.Values.Any(appBar => appBar.Fixed && !appBar.Bottom);
+
+    public bool HasFixedBottomAppBar => _appBars.Values.Any(appBar => appBar.Fixed && appBar.Bottom);
 
     public bool HasOpenDrawers => _openStates.Values.Any(isOpen => isOpen);
 
@@ -77,31 +80,26 @@ internal sealed class KalDrawerContext
         StateChanged?.Invoke();
     }
 
-    public void RegisterAppBar()
+    public void RegisterAppBar(Guid key, bool bottom, bool isFixed)
     {
-        _appBarCount++;
-        StateChanged?.Invoke();
-    }
+        var registration = new KalAppBarRegistration(bottom, isFixed);
 
-    public void SetAppBarPosition(bool bottom)
-    {
-        if (_appBarBottom == bottom)
+        if (_appBars.TryGetValue(key, out var existingRegistration) && existingRegistration == registration)
         {
             return;
         }
 
-        _appBarBottom = bottom;
+        _appBars[key] = registration;
         StateChanged?.Invoke();
     }
 
-    public void UnregisterAppBar()
+    public void UnregisterAppBar(Guid key)
     {
-        if (_appBarCount == 0)
+        if (!_appBars.Remove(key))
         {
             return;
         }
 
-        _appBarCount--;
         StateChanged?.Invoke();
     }
 
@@ -145,4 +143,6 @@ internal sealed class KalDrawerContext
     }
 
     private sealed record KalDrawerRegistration(KalDrawerSide Side, DrawerWidth Width, KalDrawerVariant Variant);
+
+    private sealed record KalAppBarRegistration(bool Bottom, bool Fixed);
 }
