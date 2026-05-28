@@ -3,3 +3,19 @@
 
 @source "../../../Example.UI.Client";
 @source "../../Components";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+    .kal-app-bar {
+        --kal-app-bar-background: var(--color-green-200);
+        --kal-app-bar-foreground: var(--color-green-800);
+        --kal-app-bar-border: var(--color-green-200);
+    }
+
+    .dark .kal-app-bar {
+        --kal-app-bar-background: var(--color-slate-900);
+        --kal-app-bar-foreground: var(--color-slate-100);
+        --kal-app-bar-border: var(--color-slate-700);
+    }
+}
