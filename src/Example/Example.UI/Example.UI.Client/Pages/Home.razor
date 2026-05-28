@@ -1,8 +1,12 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
-
-<section class="space-y-3">
-    <h1 class="text-3xl font-semibold tracking-tight text-slate-950">Hello, world!</h1>
-    <p class="text-slate-700">Welcome to your new app.</p>
-</section>
+<KalAppBar Fixed>
+    <KalAppBarToggle HorizontalAlignment="KalHorizontalAlignment.Right" />
+    <a href="/" class="order-20 text-lg font-semibold text-left">
+        KalBlazor
+    </a>
+    <KalCollapsible HorizontalAlignment="@KalHorizontalAlignment.Left">
+        <a href="/" class="font-medium">Home</a>
+        <a href="/not-found" class="font-medium">Not found</a>
+    </KalCollapsible>
+</KalAppBar>

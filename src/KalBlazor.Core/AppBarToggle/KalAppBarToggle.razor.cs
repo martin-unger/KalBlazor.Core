@@ -6,7 +6,7 @@ public partial class KalAppBarToggle
 {
     protected override string ComponentClass => "kal-app-bar-toggle";
 
-    protected override string DefaultClass => "relative order-10 inline-flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-md text-slate-950 md:hidden ";
+    protected override string DefaultClass => "relative inline-flex h-10 w-10 shrink-0 items-center justify-center self-start rounded-md text-slate-950 md:hidden";
 
     [Parameter]
     public string Label { get; set; } = "Navigation umschalten";
@@ -20,7 +20,10 @@ public partial class KalAppBarToggle
     [CascadingParameter]
     internal KalAppBarContext? AppBarContext { get; set; }
 
-    protected override string DynamicClass => HorizontalAlignment == KalHorizontalAlignment.Right ? "ml-auto justify-self-end" : "mr-auto justify-self-start";
+    protected override string DynamicClass =>
+        HorizontalAlignment == KalHorizontalAlignment.Right
+            ? "order-30 ml-auto justify-self-end"
+            : "order-10 mr-auto justify-self-start";
 
     protected override void OnParametersSet()
     {

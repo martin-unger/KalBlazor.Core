@@ -2,6 +2,7 @@
 @import "./blazor.css";
 
 @source "../../../Example.UI.Client";
+@source "../../../../../KalBlazor.Core";
 @source "../../Components";
 
 @custom-variant dark (&:where(.dark, .dark *));
