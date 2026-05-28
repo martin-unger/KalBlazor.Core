@@ -26,7 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Tailwind\**\*.css" Pack="true" PackagePath="contentFiles\any\any\tailwind\" />
+        <None Include="Tailwind\**\*.css" Pack="true" PackagePath="contentFiles\any\any\tailwind" />
     </ItemGroup>
 
 </Project>
