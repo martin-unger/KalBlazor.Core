@@ -14,7 +14,8 @@
             <KalGridColumn TItem="CustomerAccount"
                            Title="Kunde"
                            Property="@(account => account.Name)"
-                           WidthClass="w-[18rem]">
+                           WidthClass="w-[18rem]"
+                           AdditionalHeaderClass="bg-amber-50 text-amber-900">
                 <CellTemplate Context="account">
                     <a href="@account.CustomerUrl"
                        class="font-semibold text-amber-700 hover:text-amber-900 hover:underline">
@@ -38,7 +39,8 @@
             <KalGridColumn TItem="CustomerAccount"
                            Title="Status"
                            Property="@(account => account.Status)"
-                           CollapseBelow="KalDataGridBreakpoint.Md">
+                           CollapseBelow="KalDataGridBreakpoint.Md"
+                           AdditionalHeaderClass="bg-amber-50 text-amber-900">
                 <CellTemplate Context="account">
                     <span class="@GetStatusClass(account.Status)">@account.Status</span>
                 </CellTemplate>

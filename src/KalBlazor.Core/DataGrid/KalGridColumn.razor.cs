@@ -47,6 +47,12 @@ public partial class KalGridColumn<TItem> : IDisposable
     public string? WidthClass { get; set; }
 
     [Parameter]
+    public string? HeaderClass { get; set; }
+
+    [Parameter]
+    public string? AdditionalHeaderClass { get; set; }
+
+    [Parameter]
     public string? CellClass { get; set; }
 
     [Parameter]
@@ -66,7 +72,17 @@ public partial class KalGridColumn<TItem> : IDisposable
 
     internal RenderFragment HeaderContent => ChildContent ?? (builder => builder.AddContent(0, HeaderText));
 
-    internal string HeaderCssClass => CssClass;
+    internal string HeaderCssClass
+    {
+        get
+        {
+            var effectiveClass = !string.IsNullOrWhiteSpace(HeaderClass)
+                ? HeaderClass
+                : CssClass;
+
+            return $"{effectiveClass} {AdditionalHeaderClass}".Trim();
+        }
+    }
 
     internal string CellCssClass
     {
