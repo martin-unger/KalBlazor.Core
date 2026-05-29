@@ -40,7 +40,7 @@
                 <tr class="@HeaderRowCssClass">
                     @foreach (var column in GridContext.Columns)
                     {
-                        <th class="@column.HeaderCssClass" scope="@column.Scope">
+                        <th class="@GetHeaderCellCssClass(column)" scope="@column.Scope">
                             @column.HeaderContent
                         </th>
                     }

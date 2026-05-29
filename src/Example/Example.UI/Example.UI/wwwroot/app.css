@@ -647,9 +647,6 @@
   .justify-self-start {
     justify-self: flex-start;
   }
-  .overflow-x-auto {
-    overflow-x: auto;
-  }
   .overflow-y-auto {
     overflow-y: auto;
   }

@@ -11,7 +11,7 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
     private const string DefaultRowClass = "transition-colors hover:bg-slate-50";
     protected override string ComponentClass => "kal-data-grid";
 
-    protected override string DefaultClass => "w-full overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-sm";
+    protected override string DefaultClass => "w-full rounded-lg border border-slate-200 bg-white shadow-sm";
 
     private KalDataGridContext<TItem> GridContext { get; } = new();
 
@@ -76,6 +76,9 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
     public string? AdditionalHeaderRowClass { get; set; }
 
     [Parameter]
+    public string? AdditionalHeaderCellClass { get; set; }
+
+    [Parameter]
     public string? BodyClass { get; set; }
 
     [Parameter]
@@ -98,6 +101,11 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
     private string HeaderCssClass => $"{(string.IsNullOrWhiteSpace(HeaderClass) ? DefaultHeaderClass : HeaderClass)} {AdditionalHeaderClass}".Trim();
 
     private string HeaderRowCssClass => $"{(string.IsNullOrWhiteSpace(HeaderRowClass) ? DefaultHeaderRowClass : HeaderRowClass)} {AdditionalHeaderRowClass}".Trim();
+
+    private string GetHeaderCellCssClass(KalGridColumn<TItem> column)
+    {
+        return $"{AdditionalHeaderCellClass} {column.HeaderCssClass}".Trim();
+    }
 
     private string BodyCssClass => $"{(string.IsNullOrWhiteSpace(BodyClass) ? DefaultBodyClass : BodyClass)} {AdditionalBodyClass}".Trim();
 

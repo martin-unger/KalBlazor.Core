@@ -246,6 +246,9 @@
   .top-14 {
     top: calc(var(--spacing) * 14);
   }
+  .top-\[7\.25rem\] {
+    top: 7.25rem;
+  }
   .right-0 {
     right: calc(var(--spacing) * 0);
   }
@@ -329,6 +332,9 @@
   }
   .left-\[var\(--container-xs\)\] {
     left: var(--container-xs);
+  }
+  .z-20 {
+    z-index: 20;
   }
   .z-30 {
     z-index: 30;
@@ -661,9 +667,6 @@
   }
   .justify-self-start {
     justify-self: flex-start;
-  }
-  .overflow-x-auto {
-    overflow-x: auto;
   }
   .overflow-y-auto {
     overflow-y: auto;

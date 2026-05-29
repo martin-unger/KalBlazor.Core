@@ -5,9 +5,12 @@
 
     <KalDataGrid TItem="CustomerAccount"
                  Items="@Accounts"
+                 AdditionalHeaderCellClass="sticky top-[7.25rem] z-20 bg-slate-50"
                  AdditionalClass="my-6">
         <Filter>
-            <KalDataGridFilter Placeholder="Accounts filtern..." />
+            <KalDataGridFilter
+                Placeholder="Accounts filtern..."
+                AdditionalClass="sticky top-14 z-30" />
         </Filter>
 
         <Columns>
