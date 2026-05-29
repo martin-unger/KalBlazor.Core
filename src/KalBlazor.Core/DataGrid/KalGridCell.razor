@@ -1,0 +1,13 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<td @attributes="FilteredAdditionalAttributes" class="@CssClass">
+    @ChildContent
+
+    @if (CollapsedContent is not null)
+    {
+        <div class="@CollapsedContentCssClass">
+            @CollapsedContent
+        </div>
+    }
+</td>

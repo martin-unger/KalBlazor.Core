@@ -52,7 +52,14 @@ public partial class KalThemeToggle : IAsyncDisposable
     {
         if (Module is not null)
         {
-            await Module.DisposeAsync();
+            try
+            {
+                await Module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // The Blazor Server circuit can disconnect before JS module disposal runs.
+            }
         }
     }
 }

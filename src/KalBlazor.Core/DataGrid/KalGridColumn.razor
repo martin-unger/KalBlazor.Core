@@ -1,0 +1,10 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@typeparam TItem
+@inherits BaseComponent
+
+@if (GridContext is null)
+{
+    <th @attributes="FilteredAdditionalAttributes" class="@CssClass" scope="@Scope">
+        @ChildContent
+    </th>
+}

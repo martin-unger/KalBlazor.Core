@@ -1,0 +1,75 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@typeparam TItem
+@inherits BaseComponent
+@attribute [CascadingTypeParameter(nameof(TItem))]
+
+<div @attributes="FilteredAdditionalAttributes" class="@CssClass">
+    @if (Columns is not null)
+    {
+        <CascadingValue Value="GridContext" IsFixed="true">
+            <div class="hidden" aria-hidden="true">
+                @Columns
+            </div>
+        </CascadingValue>
+    }
+
+    @if (Filter is not null || ShowFilter)
+    {
+        <CascadingValue Value="@((IKalDataGridFilterContext)this)" IsFixed="false">
+            @if (Filter is not null)
+            {
+                @Filter
+            }
+            else
+            {
+                <KalDataGridFilter
+                    Class="@FilterClass"
+                    AdditionalClass="@AdditionalFilterClass"
+                    InputClass="@FilterInputClass"
+                    AdditionalInputClass="@AdditionalFilterInputClass"
+                    Placeholder="@FilterPlaceholder"
+                    ShowResetButton="false" />
+            }
+        </CascadingValue>
+    }
+
+    <table class="@TableCssClass">
+        @if (IsBound)
+        {
+            <thead class="@HeaderCssClass">
+                <tr class="@HeaderRowCssClass">
+                    @foreach (var column in GridContext.Columns)
+                    {
+                        <th class="@GetHeaderCellCssClass(column)" scope="@column.Scope">
+                            @column.HeaderContent
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody class="@BodyCssClass">
+                @foreach (var item in BoundItems)
+                {
+                    <tr class="@RowCssClass">
+                        @foreach (var column in GridContext.Columns)
+                        {
+                            <td class="@column.CellCssClass">
+                                @column.RenderCell(item)
+
+                                @if (column.CollapsedContent is not null)
+                                {
+                                    <div class="@column.CollapsedContentCssClass">
+                                        @column.CollapsedContent(item)
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        }
+        else
+        {
+            @ChildContent
+        }
+    </table>
+</div>

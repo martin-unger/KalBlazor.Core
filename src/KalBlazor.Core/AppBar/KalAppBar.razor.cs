@@ -4,7 +4,9 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 public partial class KalAppBar : IDisposable
 {
-    protected override string ComponentClass => "kal-app-bar";
+    private readonly Guid _appBarKey = Guid.NewGuid();
+
+    protected override string ComponentClass => $"kal-app-bar {AppBarStateClass}";
 
     protected override string DefaultClass => "w-full min-h-14 px-4 flex flex-wrap items-center justify-between gap-x-3 bg-[var(--kal-app-bar-background,var(--color-amber-300))] text-[var(--kal-app-bar-foreground,var(--color-slate-950))] border-[var(--kal-app-bar-border,var(--color-slate-200))] shadow-sm transition-[margin-left,margin-right,left,right] duration-200 ease-out";
 
@@ -24,6 +26,11 @@ public partial class KalAppBar : IDisposable
 
     protected override string DynamicClass => $"{PositionClass} {WrapClass} {DrawerMarginClass} {FixedClass}".Trim();
 
+    private bool IsFixedToViewport => Fixed || Bottom;
+
+    private string AppBarStateClass =>
+        $"{(IsFixedToViewport ? "kal-app-bar-fixed" : string.Empty)} {(Bottom ? "kal-app-bar-bottom" : "kal-app-bar-top")}".Trim();
+
     private string PositionClass
     {
         get
@@ -36,7 +43,7 @@ public partial class KalAppBar : IDisposable
 
     private string WrapClass => Bottom ? "content-end pb-2 pt-0 md:content-center md:py-0" : "content-start pb-0 pt-2 md:content-center md:py-0";
 
-    private string FixedClass => Fixed || Bottom ? $"fixed {AppBarZIndexClass} {DrawerInsetClass}" : string.Empty;
+    private string FixedClass => IsFixedToViewport ? $"fixed {AppBarZIndexClass} {DrawerInsetClass}" : string.Empty;
 
     private string AppBarZIndexClass => DrawerContext?.HasOpenOverlayDrawers == true ? "z-30" : "z-50";
 
@@ -56,7 +63,6 @@ public partial class KalAppBar : IDisposable
 
         if (DrawerContext is not null)
         {
-            DrawerContext.RegisterAppBar();
             DrawerContext.StateChanged += StateHasChanged;
         }
     }
@@ -64,7 +70,7 @@ public partial class KalAppBar : IDisposable
     protected override void OnParametersSet()
     {
         AppBarContext.Bottom = Bottom;
-        DrawerContext?.SetAppBarPosition(Bottom);
+        DrawerContext?.RegisterAppBar(_appBarKey, Bottom, IsFixedToViewport);
     }
 
     public void Dispose()
@@ -72,7 +78,7 @@ public partial class KalAppBar : IDisposable
         if (DrawerContext is not null)
         {
             DrawerContext.StateChanged -= StateHasChanged;
-            DrawerContext.UnregisterAppBar();
+            DrawerContext.UnregisterAppBar(_appBarKey);
         }
     }
 }
