@@ -7,7 +7,7 @@ public partial class KalIcon
 {
     protected override string ComponentClass => "kal-icon";
 
-    protected override string DefaultClass => "inline-block shrink-0 overflow-visible align-middle fill-current stroke-current text-base";
+    protected override string DefaultClass => "inline-block shrink-0 overflow-visible align-middle fill-current stroke-current";
 
     [Parameter]
     public string? Icon { get; set; }
