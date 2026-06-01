@@ -1,0 +1,19 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+<svg
+    @attributes="IconAdditionalAttributes"
+    class="@CssClass"
+    style="@IconStyle"
+    viewBox="@ViewBox"
+    preserveAspectRatio="@PreserveAspectRatio"
+    stroke-width="@StrokeWidth"
+    role="@Role"
+    aria-hidden="@AriaHidden"
+    aria-label="@AriaLabel"
+    focusable="false">
+    @if (!string.IsNullOrWhiteSpace(IconReference))
+    {
+        <use href="@IconReference"></use>
+    }
+</svg>
