@@ -1,0 +1,4 @@
+.kal-icon {
+    height: 1em;
+    width: calc(1em * var(--kal-icon-aspect-ratio, 1));
+}
