@@ -20,6 +20,12 @@
                            Property="@(account => account.Name)"
                            WidthClass="w-[18rem]"
                            AdditionalHeaderClass="bg-amber-50 text-amber-900">
+                <CellHeaderTemplate>
+                    <div>Kunde</div>
+                    <div class="text-[0.65rem] font-normal normal-case tracking-normal text-amber-700">
+                        Name und Segment
+                    </div>
+                </CellHeaderTemplate>
                 <CellTemplate Context="account">
                     <a href="@account.CustomerUrl"
                        class="font-semibold text-amber-700 hover:text-amber-900 hover:underline">
