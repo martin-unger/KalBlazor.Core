@@ -1,4 +1,4 @@
-namespace SoftwareThingies.KalBlazor.Core;
+namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 
 internal sealed class KalDataGridContext<TItem>
 {
