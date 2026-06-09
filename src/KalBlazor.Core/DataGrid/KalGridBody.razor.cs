@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace SoftwareThingies.KalBlazor.Core;
+namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 
 public partial class KalGridBody
 {

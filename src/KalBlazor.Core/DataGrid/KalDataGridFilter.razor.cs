@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 
-namespace SoftwareThingies.KalBlazor.Core;
+namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 
 public partial class KalDataGridFilter : BaseComponent
 {

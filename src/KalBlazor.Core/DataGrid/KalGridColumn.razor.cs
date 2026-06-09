@@ -1,14 +1,16 @@
-using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.AspNetCore.Components;
 
-namespace SoftwareThingies.KalBlazor.Core;
+namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 
 public partial class KalGridColumn<TItem> : IDisposable
 {
     private const string DefaultCollapsedContentClass = "mt-2 space-y-1 text-xs leading-5 text-slate-500";
-    private static readonly RenderFragment EmptyCell = builder => { };
+    private static readonly RenderFragment EmptyCell = _ => { };
+    private Expression<Func<TItem, object?>>? _compiledProperty;
+    private Func<TItem, object?>? _propertyAccessor;
 
     protected override string ComponentClass => "kal-grid-column";
 
@@ -114,13 +116,11 @@ public partial class KalGridColumn<TItem> : IDisposable
 
     internal string GetSearchText(TItem item)
     {
-        if (Property is null)
+        var value = GetPropertyValue(item);
+        if (value is null)
         {
             return string.Empty;
         }
-
-        var accessor = Property.Compile();
-        var value = accessor(item);
 
         return Convert.ToString(value, CultureInfo.CurrentCulture) ?? string.Empty;
     }
@@ -134,8 +134,7 @@ public partial class KalGridColumn<TItem> : IDisposable
 
         if (Property is not null)
         {
-            var accessor = Property.Compile();
-            var value = accessor(item);
+            var value = GetPropertyValue(item);
             return builder => builder.AddContent(0, value);
         }
 
@@ -152,23 +151,76 @@ public partial class KalGridColumn<TItem> : IDisposable
         GridContext?.Unregister(this);
     }
 
+    private object? GetPropertyValue(TItem item)
+    {
+        if (Property is null)
+        {
+            return null;
+        }
+
+        if (!ReferenceEquals(Property, _compiledProperty))
+        {
+            _compiledProperty = Property;
+            _propertyAccessor = CompileNullSafeAccessor(Property);
+        }
+
+        return _propertyAccessor!(item);
+    }
+
+    private static Func<TItem, object?> CompileNullSafeAccessor(Expression<Func<TItem, object?>> expression)
+    {
+        var body = new NullSafeMemberAccessVisitor().Visit(expression.Body);
+        return Expression.Lambda<Func<TItem, object?>>(body!, expression.Parameters).Compile();
+    }
+
     private static bool TryGetPropertyInfo(Expression<Func<TItem, object?>>? expression, out PropertyInfo property)
     {
         property = null!;
 
-        if (expression?.Body is MemberExpression memberExpression && memberExpression.Member is PropertyInfo directProperty)
+        switch (expression?.Body)
         {
-            property = directProperty;
-            return true;
+            case MemberExpression memberExpression when memberExpression.Member is PropertyInfo directProperty:
+                property = directProperty;
+                return true;
+            case UnaryExpression { Operand: MemberExpression unaryMemberExpression }
+                when unaryMemberExpression.Member is PropertyInfo unaryProperty:
+                property = unaryProperty;
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private sealed class NullSafeMemberAccessVisitor : ExpressionVisitor
+    {
+        protected override Expression VisitMember(MemberExpression node)
+        {
+            if (node.Expression is null)
+            {
+                return base.VisitMember(node);
+            }
+
+            var instance = Visit(node.Expression);
+            var memberAccess = Expression.MakeMemberAccess(instance, node.Member);
+
+            if (!CanBeNull(instance.Type))
+            {
+                return memberAccess;
+            }
+
+            var instanceVariable = Expression.Variable(instance.Type, "instance");
+            return Expression.Block(
+                [instanceVariable],
+                Expression.Assign(instanceVariable, instance),
+                Expression.Condition(
+                    Expression.Equal(instanceVariable, Expression.Constant(null, instance.Type)),
+                    Expression.Default(node.Type),
+                    Expression.MakeMemberAccess(instanceVariable, node.Member)));
         }
 
-        if (expression?.Body is UnaryExpression { Operand: MemberExpression unaryMemberExpression }
-            && unaryMemberExpression.Member is PropertyInfo unaryProperty)
+        private static bool CanBeNull(Type type)
         {
-            property = unaryProperty;
-            return true;
+            return !type.IsValueType || Nullable.GetUnderlyingType(type) is not null;
         }
-
-        return false;
     }
 }
