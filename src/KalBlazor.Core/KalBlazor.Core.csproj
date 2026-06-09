@@ -9,6 +9,8 @@
         <AssemblyName>SoftwareThingies.KalBlazor.Core</AssemblyName>
         <RootNamespace>SoftwareThingies.KalBlazor.Core</RootNamespace>
         <PackageId>SoftwareThingies.KalBlazor.Core</PackageId>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <Version>0.6.0</Version>
         <AssemblyVersion>0.6.0.0</AssemblyVersion>
         <FileVersion>0.6.0.0</FileVersion>
@@ -26,6 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\..\README.md" Pack="true" PackagePath="" />
+        <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
         <None Include="Tailwind\**\*.css" Pack="true" PackagePath="contentFiles\any\any\tailwind" />
     </ItemGroup>
 
