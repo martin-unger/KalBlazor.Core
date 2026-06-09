@@ -28,6 +28,9 @@ public partial class KalGridColumn<TItem> : IDisposable
     public string? Title { get; set; }
 
     [Parameter]
+    public RenderFragment? CellHeaderTemplate { get; set; }
+
+    [Parameter]
     public Expression<Func<TItem, object?>>? Property { get; set; }
 
     [Parameter]
@@ -72,7 +75,9 @@ public partial class KalGridColumn<TItem> : IDisposable
     [Parameter]
     public string? AdditionalCollapsedContentClass { get; set; }
 
-    internal RenderFragment HeaderContent => ChildContent ?? (builder => builder.AddContent(0, HeaderText));
+    internal RenderFragment HeaderContent => CellHeaderTemplate
+        ?? ChildContent
+        ?? (builder => builder.AddContent(0, HeaderText));
 
     internal string HeaderCssClass
     {
