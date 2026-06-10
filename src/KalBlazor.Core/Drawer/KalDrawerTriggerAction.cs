@@ -4,5 +4,7 @@ public enum KalDrawerTriggerAction
 {
     Toggle,
     Open,
-    Close
+    Close,
+    Minimize,
+    Restore
 }

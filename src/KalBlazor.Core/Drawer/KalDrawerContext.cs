@@ -2,7 +2,7 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 internal sealed class KalDrawerContext
 {
-    private readonly Dictionary<string, bool> _openStates = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, KalDrawerState> _states = new(StringComparer.Ordinal);
     private readonly Dictionary<string, KalDrawerRegistration> _registrations = new(StringComparer.Ordinal);
     private readonly Dictionary<Guid, KalAppBarRegistration> _appBars = [];
 
@@ -16,17 +16,17 @@ internal sealed class KalDrawerContext
 
     public bool HasFixedBottomAppBar => _appBars.Values.Any(appBar => appBar.Fixed && appBar.Bottom);
 
-    public bool HasOpenDrawers => _openStates.Values.Any(isOpen => isOpen);
+    public bool HasOpenDrawers => _states.Values.Any(state => state == KalDrawerState.Open);
 
     public bool HasOpenOverlayDrawers =>
-        _openStates.Any(state =>
-            state.Value
+        _states.Any(state =>
+            state.Value == KalDrawerState.Open
             && _registrations.TryGetValue(state.Key, out var registration)
             && registration.Variant == KalDrawerVariant.Overlay);
 
     public KalDrawerBackdrop? ActiveBackdrop =>
-        _openStates
-            .Where(state => state.Value)
+        _states
+            .Where(state => state.Value == KalDrawerState.Open)
             .Select(state => _registrations.TryGetValue(state.Key, out var registration) ? registration : null)
             .Where(registration => registration is not null && registration.Backdrop != KalDrawerBackdrop.None)
             .Select(registration => registration!.Backdrop)
@@ -35,28 +35,33 @@ internal sealed class KalDrawerContext
             .FirstOrDefault();
 
     public bool HasOpenOverlayDrawerWithBackdrop =>
-        _openStates.Any(state =>
-            state.Value
+        _states.Any(state =>
+            state.Value == KalDrawerState.Open
             && _registrations.TryGetValue(state.Key, out var registration)
             && registration.Variant == KalDrawerVariant.Overlay
             && registration.Backdrop != KalDrawerBackdrop.None);
 
-    public DrawerWidth? LeftDockedWidth => GetOpenWidth(KalDrawerSide.Left, KalDrawerVariant.Docked);
+    public KalDrawerOffset? LeftDockedOffset => GetVisibleOffset(KalDrawerSide.Left, KalDrawerVariant.Docked);
 
-    public DrawerWidth? RightDockedWidth => GetOpenWidth(KalDrawerSide.Right, KalDrawerVariant.Docked);
+    public KalDrawerOffset? RightDockedOffset => GetVisibleOffset(KalDrawerSide.Right, KalDrawerVariant.Docked);
 
-    public DrawerWidth? LeftContentOffsetWidth => GetOpenWidth(KalDrawerSide.Left, KalDrawerVariant.Docked, KalDrawerVariant.Clipped);
+    public KalDrawerOffset? LeftContentOffset => GetVisibleOffset(KalDrawerSide.Left, KalDrawerVariant.Docked, KalDrawerVariant.Clipped);
 
-    public DrawerWidth? RightContentOffsetWidth => GetOpenWidth(KalDrawerSide.Right, KalDrawerVariant.Docked, KalDrawerVariant.Clipped);
+    public KalDrawerOffset? RightContentOffset => GetVisibleOffset(KalDrawerSide.Right, KalDrawerVariant.Docked, KalDrawerVariant.Clipped);
 
     public bool IsOpen(string key)
     {
-        return _openStates.TryGetValue(key, out var isOpen) && isOpen;
+        return GetState(key) == KalDrawerState.Open;
+    }
+
+    public bool IsMinimized(string key)
+    {
+        return GetState(key) == KalDrawerState.Minimized;
     }
 
     public void Open(string key)
     {
-        SetOpen(key, true);
+        SetState(key, KalDrawerState.Open);
     }
 
     public void Close(string key)
@@ -66,7 +71,44 @@ internal sealed class KalDrawerContext
             return;
         }
 
-        SetOpen(key, false);
+        if (MinimizesOnClose(key))
+        {
+            Minimize(key);
+            return;
+        }
+
+        SetState(key, KalDrawerState.Closed);
+    }
+
+    public void Minimize(string key)
+    {
+        if (!IsOpen(key)
+            || !_registrations.TryGetValue(key, out var registration)
+            || !registration.Minimizable)
+        {
+            return;
+        }
+
+        SetState(key, KalDrawerState.Minimized);
+    }
+
+    public void Restore(string key)
+    {
+        if (IsMinimized(key))
+        {
+            Open(key);
+        }
+    }
+
+    public void ToggleMinimized(string key)
+    {
+        if (IsMinimized(key))
+        {
+            Restore(key);
+            return;
+        }
+
+        Minimize(key);
     }
 
     public void Toggle(string key)
@@ -84,14 +126,23 @@ internal sealed class KalDrawerContext
     {
         var changed = false;
 
-        foreach (var key in _openStates.Keys.ToArray())
+        foreach (var key in _states.Keys.ToArray())
         {
-            if (!_openStates[key] || PreventsClose(key))
+            if (_states[key] == KalDrawerState.Closed || PreventsClose(key))
             {
                 continue;
             }
 
-            _openStates[key] = false;
+            var targetState = MinimizesOnClose(key)
+                ? KalDrawerState.Minimized
+                : KalDrawerState.Closed;
+
+            if (_states[key] == targetState)
+            {
+                continue;
+            }
+
+            _states[key] = targetState;
             changed = true;
         }
 
@@ -107,9 +158,20 @@ internal sealed class KalDrawerContext
         DrawerWidth width,
         KalDrawerVariant variant,
         KalDrawerBackdrop backdrop,
-        bool preventClose)
+        bool preventClose,
+        bool minimizable,
+        bool minimizeOnClose,
+        string minimizedOffsetClass)
     {
-        var registration = new KalDrawerRegistration(side, width, variant, backdrop, preventClose);
+        var registration = new KalDrawerRegistration(
+            side,
+            width,
+            variant,
+            backdrop,
+            preventClose,
+            minimizable,
+            minimizeOnClose,
+            minimizedOffsetClass);
 
         if (_registrations.TryGetValue(key, out var existingRegistration) && existingRegistration == registration)
         {
@@ -146,7 +208,7 @@ internal sealed class KalDrawerContext
     public void Unregister(string key)
     {
         var registrationRemoved = _registrations.Remove(key);
-        var stateRemoved = _openStates.Remove(key);
+        var stateRemoved = _states.Remove(key);
 
         if (!registrationRemoved && !stateRemoved)
         {
@@ -156,14 +218,19 @@ internal sealed class KalDrawerContext
         StateChanged?.Invoke();
     }
 
-    private void SetOpen(string key, bool isOpen)
+    private KalDrawerState GetState(string key)
     {
-        if (_openStates.TryGetValue(key, out var currentState) && currentState == isOpen)
+        return _states.TryGetValue(key, out var state) ? state : KalDrawerState.Closed;
+    }
+
+    private void SetState(string key, KalDrawerState state)
+    {
+        if (_states.TryGetValue(key, out var currentState) && currentState == state)
         {
             return;
         }
 
-        _openStates[key] = isOpen;
+        _states[key] = state;
         StateChanged?.Invoke();
     }
 
@@ -172,18 +239,30 @@ internal sealed class KalDrawerContext
         return _registrations.TryGetValue(key, out var registration) && registration.PreventClose;
     }
 
-    private DrawerWidth? GetOpenWidth(KalDrawerSide side, params KalDrawerVariant[] variants)
+    private bool MinimizesOnClose(string key)
     {
-        return _openStates
-            .Where(state => state.Value)
-            .Select(state => _registrations.TryGetValue(state.Key, out var registration) ? registration : null)
-            .Where(registration =>
-                registration is not null
-                && registration.Side == side
-                && variants.Contains(registration.Variant))
-            .Select(registration => registration!.Width)
-            .OrderByDescending(width => (int)width)
-            .Cast<DrawerWidth?>()
+        return _registrations.TryGetValue(key, out var registration) && registration.MinimizeOnClose;
+    }
+
+    private KalDrawerOffset? GetVisibleOffset(KalDrawerSide side, params KalDrawerVariant[] variants)
+    {
+        return _states
+            .Where(state => state.Value != KalDrawerState.Closed)
+            .Select(state => _registrations.TryGetValue(state.Key, out var registration)
+                ? new { state.Value, Registration = registration }
+                : null)
+            .Where(item =>
+                item is not null
+                && item.Registration.Side == side
+                && variants.Contains(item.Registration.Variant))
+            .OrderByDescending(item =>
+                item!.Value == KalDrawerState.Open
+                    ? (int)item.Registration.Width + 1
+                    : 0)
+            .Select(item =>
+                item!.Value == KalDrawerState.Minimized
+                    ? new KalDrawerOffset(null, item.Registration.MinimizedOffsetClass)
+                    : new KalDrawerOffset(item.Registration.Width, null))
             .FirstOrDefault();
     }
 
@@ -192,7 +271,10 @@ internal sealed class KalDrawerContext
         DrawerWidth Width,
         KalDrawerVariant Variant,
         KalDrawerBackdrop Backdrop,
-        bool PreventClose);
+        bool PreventClose,
+        bool Minimizable,
+        bool MinimizeOnClose,
+        string MinimizedOffsetClass);
 
     private sealed record KalAppBarRegistration(bool Bottom, bool Fixed);
 }

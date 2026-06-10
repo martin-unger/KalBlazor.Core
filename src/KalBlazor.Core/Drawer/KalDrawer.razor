@@ -7,5 +7,23 @@
     aria-hidden="@IsHidden"
     @attributes="FilteredAdditionalAttributes"
     class="@CssClass">
+    @if (Minimizable)
+    {
+        <button
+            type="button"
+            aria-label="@EffectiveMinimizeButtonAriaLabel"
+            aria-expanded="@(!IsMinimized)"
+            class="@MinimizeButtonCssClass"
+            @onclick="ToggleMinimized">
+            @if (MinimizeButtonContent is not null)
+            {
+                @MinimizeButtonContent
+            }
+            else
+            {
+                <KalIcon Icon="@MinimizeIcon" AdditionalClass="@EffectiveMinimizeIconClass" />
+            }
+        </button>
+    }
     @ChildContent
 </aside>

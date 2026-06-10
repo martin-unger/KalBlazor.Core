@@ -27,6 +27,8 @@
     <KalDrawer Id="left-menu"
                Variant="KalDrawerVariant.Overlay"
                Backdrop="@_leftDrawerBackdrop"
+               Minimizable
+               @bind-MinimizeOnClose="_minimizeLeftDrawerOnClose"
                PreventClose="@_preventLeftDrawerClose">
         <KalDrawerHeader>Header</KalDrawerHeader>
         <KalDrawerContent>
@@ -34,6 +36,11 @@
                 <label class="flex items-center gap-2">
                     <input type="checkbox" @bind="_preventLeftDrawerClose" />
                     Schließen verhindern
+                </label>
+
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" @bind="_minimizeLeftDrawerOnClose" />
+                    Beim Schließen minimieren
                 </label>
 
                 <label class="flex flex-col gap-1">
@@ -126,6 +133,7 @@
 @code {
     private KalDrawerBackdrop _leftDrawerBackdrop = KalDrawerBackdrop.Darkened;
     private bool _preventLeftDrawerClose;
+    private bool _minimizeLeftDrawerOnClose;
 }
 
 <div id="blazor-error-ui" data-nosnippet>
