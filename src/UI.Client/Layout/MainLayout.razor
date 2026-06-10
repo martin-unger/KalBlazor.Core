@@ -36,7 +36,7 @@
                ExpandOnHoverDelay="@_expandOnHoverDelay"
                CollapseOnMouseLeaveDelay="@_collapseOnMouseLeaveDelay"
                PreventClose="@_preventLeftDrawerClose">
-        <ChildContent>
+        <ChildContent Context="drawer">
             <KalDrawerHeader AdditionalClass="flex items-center justify-between gap-2">
                 <KalDrawerMinimizerTrigger AdditionalClass="rounded p-2 hover:bg-slate-100">
                     <KalIcon Icon="@Icons.AngleLeft" />
@@ -44,7 +44,7 @@
                 <KalDrawerMaximizerTrigger AdditionalClass="rounded p-2 hover:bg-slate-100">
                     <KalIcon Icon="@Icons.Bars" />
                 </KalDrawerMaximizerTrigger>
-                <span>Header</span>
+                <span>Header: @drawer.State</span>
             </KalDrawerHeader>
             <KalDrawerContent>
                 <div class="mb-6 flex flex-col gap-3 border-b border-slate-200 pb-6">
@@ -114,7 +114,9 @@
                 <div class="flex flex-col gap-3 text-slate-700">
                     <div class="flex items-center gap-3">
                         <KalIcon Icon="@Icons.AngleDown" AdditionalClass="text-xl border-2"/>
-                        <span class="text-xl">Angle Down</span>
+                        <span class="text-xl @(drawer.IsMinimized ? "hidden" : "block")">
+                            Angle Down
+                        </span>
                     </div>
                     <div class="flex items-center gap-3">
                         <KalIcon Icon="@Icons.AngleLeft" AdditionalClass="text-xl border-2"/>
