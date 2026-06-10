@@ -46,6 +46,12 @@ public partial class KalDrawerTrigger
                 case KalDrawerTriggerAction.Close:
                     DrawerContext.Close(key);
                     break;
+                case KalDrawerTriggerAction.Minimize:
+                    DrawerContext.Minimize(key);
+                    break;
+                case KalDrawerTriggerAction.Maximize:
+                    DrawerContext.Maximize(key);
+                    break;
                 default:
                     DrawerContext.Toggle(key);
                     break;

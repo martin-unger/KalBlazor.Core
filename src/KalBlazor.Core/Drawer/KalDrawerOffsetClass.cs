@@ -2,6 +2,26 @@ namespace SoftwareThingies.KalBlazor.Core;
 
 internal static class KalDrawerOffsetClass
 {
+    public static string GetMarginLeft(KalDrawerOffset? offset)
+    {
+        return GetOffsetClass(offset, "ml");
+    }
+
+    public static string GetMarginRight(KalDrawerOffset? offset)
+    {
+        return GetOffsetClass(offset, "mr");
+    }
+
+    public static string GetInsetLeft(KalDrawerOffset? offset)
+    {
+        return GetOffsetClass(offset, "left", "left-0");
+    }
+
+    public static string GetInsetRight(KalDrawerOffset? offset)
+    {
+        return GetOffsetClass(offset, "right", "right-0");
+    }
+
     public static string GetMarginLeft(DrawerWidth? width)
     {
         return width switch
@@ -80,5 +100,29 @@ internal static class KalDrawerOffsetClass
             DrawerWidth.Full => "right-[100%]",
             _ => "right-0"
         };
+    }
+
+    private static string GetOffsetClass(KalDrawerOffset? offset, string prefix, string fallback = "")
+    {
+        if (offset?.Width is not null)
+        {
+            return prefix switch
+            {
+                "ml" => GetMarginLeft(offset.Width),
+                "mr" => GetMarginRight(offset.Width),
+                "left" => GetInsetLeft(offset.Width),
+                "right" => GetInsetRight(offset.Width),
+                _ => fallback
+            };
+        }
+
+        var offsetClass = offset?.OffsetClass?
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(className => className.TrimStart('!'))
+            .FirstOrDefault(className =>
+                className.StartsWith($"{prefix}-", StringComparison.Ordinal)
+                && !className.Contains(':', StringComparison.Ordinal));
+
+        return offsetClass ?? fallback;
     }
 }

@@ -50,12 +50,12 @@ public partial class KalAppBar : IDisposable
     private string DrawerMarginClass =>
         Fixed || Bottom || DrawerContext is null
             ? string.Empty
-            : $"{KalDrawerOffsetClass.GetMarginLeft(DrawerContext.LeftDockedWidth)} {KalDrawerOffsetClass.GetMarginRight(DrawerContext.RightDockedWidth)}".Trim();
+            : $"{KalDrawerOffsetClass.GetMarginLeft(DrawerContext.LeftDockedOffset)} {KalDrawerOffsetClass.GetMarginRight(DrawerContext.RightDockedOffset)}".Trim();
 
     private string DrawerInsetClass =>
         DrawerContext is null
             ? "left-0 right-0"
-            : $"{KalDrawerOffsetClass.GetInsetLeft(DrawerContext.LeftDockedWidth)} {KalDrawerOffsetClass.GetInsetRight(DrawerContext.RightDockedWidth)}".Trim();
+            : $"{KalDrawerOffsetClass.GetInsetLeft(DrawerContext.LeftDockedOffset)} {KalDrawerOffsetClass.GetInsetRight(DrawerContext.RightDockedOffset)}".Trim();
 
     protected override void OnInitialized()
     {

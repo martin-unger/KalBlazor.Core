@@ -6,6 +6,7 @@ public static class Icons
     public const string AngleLeft = "angle-left";
     public const string AngleRight = "angle-right";
     public const string AngleUp = "angle-up";
+    public const string Bars = "bars";
     public const string Clapperboard = "clapperboard";
     public const string Document = "document";
     public const string FileArrowUp = "file-arrow-up";

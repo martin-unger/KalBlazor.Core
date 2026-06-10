@@ -1,0 +1,15 @@
+@namespace SoftwareThingies.KalBlazor.Core
+@inherits BaseComponent
+
+@if (Drawer?.IsOpen == true)
+{
+    <button
+        type="button"
+        aria-label="@AriaLabel"
+        aria-expanded="true"
+        @attributes="FilteredAdditionalAttributes"
+        class="@CssClass"
+        @onclick="Drawer.Minimize">
+        @ChildContent
+    </button>
+}
