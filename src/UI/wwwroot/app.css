@@ -619,9 +619,6 @@
   .rotate-45 {
     rotate: 45deg;
   }
-  .rotate-180 {
-    rotate: 180deg;
-  }
   .flex-col {
     flex-direction: column;
   }

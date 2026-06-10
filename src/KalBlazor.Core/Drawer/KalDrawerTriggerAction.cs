@@ -6,5 +6,5 @@ public enum KalDrawerTriggerAction
     Open,
     Close,
     Minimize,
-    Restore
+    Maximize
 }

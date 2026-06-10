@@ -63,10 +63,13 @@ public partial class KalDrawer : IDisposable
     public string MinimizeIcon { get; set; } = Icons.AngleLeft;
 
     [Parameter]
+    public string MaximizeIcon { get; set; } = Icons.Bars;
+
+    [Parameter]
     public string MinimizeButtonAriaLabel { get; set; } = "Drawer minimieren";
 
     [Parameter]
-    public string RestoreButtonAriaLabel { get; set; } = "Drawer erweitern";
+    public string MaximizeButtonAriaLabel { get; set; } = "Drawer maximieren";
 
     [Parameter]
     public string MinimizeButtonClass { get; set; } = "m-2 inline-flex size-10 shrink-0 items-center justify-center self-end rounded hover:bg-slate-100";
@@ -75,7 +78,13 @@ public partial class KalDrawer : IDisposable
     public string MinimizeIconClass { get; set; } = "text-xl transition-transform duration-200";
 
     [Parameter]
+    public string MaximizeIconClass { get; set; } = "text-xl transition-transform duration-200";
+
+    [Parameter]
     public RenderFragment? MinimizeButtonContent { get; set; }
+
+    [Parameter]
+    public RenderFragment? MaximizeButtonContent { get; set; }
 
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
@@ -149,10 +158,16 @@ public partial class KalDrawer : IDisposable
         $"{MinimizeButtonClass} {(IsMinimized ? "self-center" : string.Empty)}".Trim();
 
     private string EffectiveMinimizeButtonAriaLabel =>
-        IsMinimized ? RestoreButtonAriaLabel : MinimizeButtonAriaLabel;
+        IsMinimized ? MaximizeButtonAriaLabel : MinimizeButtonAriaLabel;
 
-    private string EffectiveMinimizeIconClass =>
-        $"{MinimizeIconClass} {(IsMinimized ? "rotate-180" : string.Empty)}".Trim();
+    private string EffectiveButtonIcon => IsMinimized ? MaximizeIcon : MinimizeIcon;
+
+    private string EffectiveButtonIconClass => IsMinimized ? MaximizeIconClass : MinimizeIconClass;
+
+    private RenderFragment? EffectiveButtonContent =>
+        IsMinimized
+            ? MaximizeButtonContent ?? MinimizeButtonContent
+            : MinimizeButtonContent;
 
     protected override void OnInitialized()
     {
@@ -218,7 +233,7 @@ public partial class KalDrawer : IDisposable
 
             if (!cancellationTokenSource.IsCancellationRequested && IsMinimized)
             {
-                await InvokeAsync(() => DrawerContext?.Restore(key));
+                await InvokeAsync(() => DrawerContext?.Maximize(key));
             }
         }
         catch (OperationCanceledException)

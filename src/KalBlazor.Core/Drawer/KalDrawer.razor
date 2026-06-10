@@ -17,13 +17,13 @@
             aria-expanded="@(!IsMinimized)"
             class="@MinimizeButtonCssClass"
             @onclick="ToggleMinimized">
-            @if (MinimizeButtonContent is not null)
+            @if (EffectiveButtonContent is not null)
             {
-                @MinimizeButtonContent
+                @EffectiveButtonContent
             }
             else
             {
-                <KalIcon Icon="@MinimizeIcon" AdditionalClass="@EffectiveMinimizeIconClass" />
+                <KalIcon Icon="@EffectiveButtonIcon" AdditionalClass="@EffectiveButtonIconClass" />
             }
         </button>
     }

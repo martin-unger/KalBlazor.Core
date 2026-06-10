@@ -92,7 +92,7 @@ internal sealed class KalDrawerContext
         SetState(key, KalDrawerState.Minimized);
     }
 
-    public void Restore(string key)
+    public void Maximize(string key)
     {
         if (IsMinimized(key))
         {
@@ -104,7 +104,7 @@ internal sealed class KalDrawerContext
     {
         if (IsMinimized(key))
         {
-            Restore(key);
+            Maximize(key);
             return;
         }
 
