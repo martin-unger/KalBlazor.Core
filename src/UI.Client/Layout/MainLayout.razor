@@ -28,6 +28,7 @@
                Variant="KalDrawerVariant.Clipped"
                Backdrop="@_leftDrawerBackdrop"
                Minimizable
+               ShowDefaultTrigger="false"
                @bind-InitialState="_leftDrawerState"
                @bind-MinimizeOnClose="_minimizeLeftDrawerOnClose"
                @bind-ExpandOnHover="_expandLeftDrawerOnHover"
@@ -35,131 +36,141 @@
                ExpandOnHoverDelay="@_expandOnHoverDelay"
                CollapseOnMouseLeaveDelay="@_collapseOnMouseLeaveDelay"
                PreventClose="@_preventLeftDrawerClose">
-        <KalDrawerHeader>Header</KalDrawerHeader>
-        <KalDrawerContent>
-            <div class="mb-6 flex flex-col gap-3 border-b border-slate-200 pb-6">
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" @bind="_preventLeftDrawerClose" />
-                    Schließen verhindern
-                </label>
+        <ChildContent>
+            <KalDrawerHeader AdditionalClass="flex items-center justify-between gap-2">
+                <KalDrawerMinimizerTrigger AdditionalClass="rounded p-2 hover:bg-slate-100">
+                    <KalIcon Icon="@Icons.AngleLeft" />
+                </KalDrawerMinimizerTrigger>
+                <KalDrawerMaximizerTrigger AdditionalClass="rounded p-2 hover:bg-slate-100">
+                    <KalIcon Icon="@Icons.Bars" />
+                </KalDrawerMaximizerTrigger>
+                <span>Header</span>
+            </KalDrawerHeader>
+            <KalDrawerContent>
+                <div class="mb-6 flex flex-col gap-3 border-b border-slate-200 pb-6">
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" @bind="_preventLeftDrawerClose"/>
+                        Schließen verhindern
+                    </label>
 
-                <label class="flex flex-col gap-1">
-                    <span>Drawer-Zustand</span>
-                    <select class="rounded border border-slate-300 px-2 py-1"
-                            @bind="_leftDrawerState">
-                        <option value="@KalDrawerState.Hidden">Hidden</option>
-                        <option value="@KalDrawerState.Minimized">Minimized</option>
-                        <option value="@KalDrawerState.Maximized">Maximized</option>
-                    </select>
-                </label>
+                    <label class="flex flex-col gap-1">
+                        <span>Drawer-Zustand</span>
+                        <select class="rounded border border-slate-300 px-2 py-1"
+                                @bind="_leftDrawerState">
+                            <option value="@KalDrawerState.Hidden">Hidden</option>
+                            <option value="@KalDrawerState.Minimized">Minimized</option>
+                            <option value="@KalDrawerState.Maximized">Maximized</option>
+                        </select>
+                    </label>
 
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" @bind="_minimizeLeftDrawerOnClose" />
-                    Beim Schließen minimieren
-                </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" @bind="_minimizeLeftDrawerOnClose"/>
+                        Beim Schließen minimieren
+                    </label>
 
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" @bind="_expandLeftDrawerOnHover" />
-                    Beim Darüberfahren erweitern
-                </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" @bind="_expandLeftDrawerOnHover"/>
+                        Beim Darüberfahren erweitern
+                    </label>
 
-                <label class="flex items-center gap-2">
-                    <input type="checkbox" @bind="_collapseLeftDrawerOnMouseLeave" />
-                    Nach Hover wieder schließen
-                </label>
+                    <label class="flex items-center gap-2">
+                        <input type="checkbox" @bind="_collapseLeftDrawerOnMouseLeave"/>
+                        Nach Hover wieder schließen
+                    </label>
 
-                <label class="flex flex-col gap-1">
-                    <span>Hover-Verzögerung in Millisekunden</span>
-                    <input type="number"
-                           min="0"
-                           class="rounded border border-slate-300 px-2 py-1"
-                           @bind="_expandOnHoverDelay" />
-                </label>
+                    <label class="flex flex-col gap-1">
+                        <span>Hover-Verzögerung in Millisekunden</span>
+                        <input type="number"
+                               min="0"
+                               class="rounded border border-slate-300 px-2 py-1"
+                               @bind="_expandOnHoverDelay"/>
+                    </label>
 
-                <label class="flex flex-col gap-1">
-                    <span>Verzögerung beim Verlassen in Millisekunden</span>
-                    <input type="number"
-                           min="0"
-                           class="rounded border border-slate-300 px-2 py-1"
-                           @bind="_collapseOnMouseLeaveDelay" />
-                </label>
+                    <label class="flex flex-col gap-1">
+                        <span>Verzögerung beim Verlassen in Millisekunden</span>
+                        <input type="number"
+                               min="0"
+                               class="rounded border border-slate-300 px-2 py-1"
+                               @bind="_collapseOnMouseLeaveDelay"/>
+                    </label>
 
-                <label class="flex flex-col gap-1">
-                    <span>Hintergrund</span>
-                    <select class="rounded border border-slate-300 px-2 py-1"
-                            @bind="_leftDrawerBackdrop">
-                        <option value="@KalDrawerBackdrop.Darkened">Verdunkelt</option>
-                        <option value="@KalDrawerBackdrop.Transparent">Transparent</option>
-                        <option value="@KalDrawerBackdrop.None">Deaktiviert</option>
-                    </select>
-                </label>
+                    <label class="flex flex-col gap-1">
+                        <span>Hintergrund</span>
+                        <select class="rounded border border-slate-300 px-2 py-1"
+                                @bind="_leftDrawerBackdrop">
+                            <option value="@KalDrawerBackdrop.Darkened">Verdunkelt</option>
+                            <option value="@KalDrawerBackdrop.Transparent">Transparent</option>
+                            <option value="@KalDrawerBackdrop.None">Deaktiviert</option>
+                        </select>
+                    </label>
 
-                <KalDrawerTrigger TargetId="left-menu"
-                                  Action="KalDrawerTriggerAction.Close"
-                                  AdditionalClass="rounded bg-slate-200 px-3 py-2">
-                    Drawer schließen
-                </KalDrawerTrigger>
-            </div>
+                    <KalDrawerTrigger TargetId="left-menu"
+                                      Action="KalDrawerTriggerAction.Close"
+                                      AdditionalClass="rounded bg-slate-200 px-3 py-2">
+                        Drawer schließen
+                    </KalDrawerTrigger>
+                </div>
 
-            <div class="flex flex-col gap-3 text-slate-700">
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.AngleDown" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Angle Down</span>
+                <div class="flex flex-col gap-3 text-slate-700">
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.AngleDown" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Angle Down</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.AngleLeft" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Angle Left</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.AngleRight" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Angle Right</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.AngleUp" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Angle Up</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Clapperboard" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Clapperboard</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Document" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Document</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.FileArrowUp" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">File Arrow Up</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Filter" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Filter</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Pencil" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Pencil</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Search" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Search</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.TableCells" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Table Cells</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.Trash" AdditionalClass="text-xl border-2"/>
+                        <span class="text-xl">Trash</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <KalIcon Icon="@Icons.X" AdditionalClass="text-xs border-4"/>
+                        <span class="text-xs ">X</span>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.AngleLeft" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Angle Left</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.AngleRight" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Angle Right</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.AngleUp" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Angle Up</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Clapperboard" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Clapperboard</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Document" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Document</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.FileArrowUp" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">File Arrow Up</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Filter" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Filter</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Pencil" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Pencil</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Search" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Search</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.TableCells" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Table Cells</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.Trash" AdditionalClass="text-xl border-2" />
-                    <span class="text-xl">Trash</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <KalIcon Icon="@Icons.X" AdditionalClass="text-xs border-4" />
-                    <span class="text-xs ">X</span>
-                </div>
-            </div>
-        </KalDrawerContent>
-        <KalDrawerFooter>Footer</KalDrawerFooter>
+            </KalDrawerContent>
+            <KalDrawerFooter>Footer</KalDrawerFooter>
+        </ChildContent>
     </KalDrawer>
 
-    <KalDrawer Name="right-menu" Side="KalDrawerSide.Right" Variant="KalDrawerVariant.Clipped">
+    <KalDrawer Name="right-menu" InitialState="KalDrawerState.Hidden" Side="KalDrawerSide.Right" Variant="KalDrawerVariant.Clipped">
         Rechts
     </KalDrawer>
 

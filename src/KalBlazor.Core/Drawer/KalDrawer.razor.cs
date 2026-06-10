@@ -51,6 +51,9 @@ public partial class KalDrawer : IDisposable
     public bool Minimizable { get; set; }
 
     [Parameter]
+    public bool ShowDefaultTrigger { get; set; } = true;
+
+    [Parameter]
     public bool MinimizeOnClose { get; set; }
 
     [Parameter]
@@ -102,19 +105,19 @@ public partial class KalDrawer : IDisposable
     public string MaximizeIconClass { get; set; } = "text-xl transition-transform duration-200";
 
     [Parameter]
-    public RenderFragment? MinimizeButtonContent { get; set; }
+    public RenderFragment? MinimizerTriggerTemplate { get; set; }
 
     [Parameter]
-    public RenderFragment? MaximizeButtonContent { get; set; }
+    public RenderFragment? MaximizerTriggerTemplate { get; set; }
 
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
     protected override string DynamicClass => $"{SideClass} {VerticalClass} {ZIndexClass} {WidthClass} {ShadowClass} {StateClass}".Trim();
 
-    private bool IsOpen => DrawerContext?.IsOpen(Key) == true;
+    internal bool IsOpen => DrawerContext?.IsOpen(Key) == true;
 
-    private bool IsMinimized => DrawerContext?.IsMinimized(Key) == true;
+    internal bool IsMinimized => DrawerContext?.IsMinimized(Key) == true;
 
     private bool IsVisible => IsOpen || IsMinimized;
 
@@ -187,8 +190,8 @@ public partial class KalDrawer : IDisposable
 
     private RenderFragment? EffectiveButtonContent =>
         IsMinimized
-            ? MaximizeButtonContent ?? MinimizeButtonContent
-            : MinimizeButtonContent;
+            ? MaximizerTriggerTemplate
+            : MinimizerTriggerTemplate;
 
     protected override void OnInitialized()
     {
@@ -272,6 +275,30 @@ public partial class KalDrawer : IDisposable
         }
 
         DrawerContext.ToggleMinimized(key);
+    }
+
+    internal void Minimize()
+    {
+        CancelHoverExpansion();
+        CancelMouseLeaveCollapse();
+        _maximizedByHover = false;
+
+        if (DrawerContext is not null && TryGetKey(out var key))
+        {
+            DrawerContext.Minimize(key);
+        }
+    }
+
+    internal void Maximize()
+    {
+        CancelHoverExpansion();
+        CancelMouseLeaveCollapse();
+        _maximizedByHover = false;
+
+        if (DrawerContext is not null && TryGetKey(out var key))
+        {
+            DrawerContext.Maximize(key);
+        }
     }
 
     private void HandleMouseEnter()
