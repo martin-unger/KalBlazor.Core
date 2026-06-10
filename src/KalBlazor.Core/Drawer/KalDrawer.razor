@@ -6,7 +6,9 @@
     role="dialog"
     aria-hidden="@IsHidden"
     @attributes="FilteredAdditionalAttributes"
-    class="@CssClass">
+    class="@CssClass"
+    @onmouseenter="HandleMouseEnter"
+    @onmouseleave="HandleMouseLeave">
     @if (Minimizable)
     {
         <button

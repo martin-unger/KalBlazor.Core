@@ -29,6 +29,8 @@
                Backdrop="@_leftDrawerBackdrop"
                Minimizable
                @bind-MinimizeOnClose="_minimizeLeftDrawerOnClose"
+               @bind-ExpandOnHover="_expandLeftDrawerOnHover"
+               ExpandOnHoverDelay="@_expandOnHoverDelay"
                PreventClose="@_preventLeftDrawerClose">
         <KalDrawerHeader>Header</KalDrawerHeader>
         <KalDrawerContent>
@@ -41,6 +43,19 @@
                 <label class="flex items-center gap-2">
                     <input type="checkbox" @bind="_minimizeLeftDrawerOnClose" />
                     Beim Schließen minimieren
+                </label>
+
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" @bind="_expandLeftDrawerOnHover" />
+                    Beim Darüberfahren erweitern
+                </label>
+
+                <label class="flex flex-col gap-1">
+                    <span>Hover-Verzögerung in Millisekunden</span>
+                    <input type="number"
+                           min="0"
+                           class="rounded border border-slate-300 px-2 py-1"
+                           @bind="_expandOnHoverDelay" />
                 </label>
 
                 <label class="flex flex-col gap-1">
@@ -134,6 +149,8 @@
     private KalDrawerBackdrop _leftDrawerBackdrop = KalDrawerBackdrop.Darkened;
     private bool _preventLeftDrawerClose;
     private bool _minimizeLeftDrawerOnClose;
+    private bool _expandLeftDrawerOnHover = true;
+    private int _expandOnHoverDelay = 500;
 }
 
 <div id="blazor-error-ui" data-nosnippet>
