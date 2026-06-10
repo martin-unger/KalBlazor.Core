@@ -25,12 +25,15 @@
     </KalAppBar>
     
     <KalDrawer Id="left-menu"
-               Variant="KalDrawerVariant.Overlay"
+               Variant="KalDrawerVariant.Clipped"
                Backdrop="@_leftDrawerBackdrop"
                Minimizable
+               @bind-InitialState="_leftDrawerState"
                @bind-MinimizeOnClose="_minimizeLeftDrawerOnClose"
                @bind-ExpandOnHover="_expandLeftDrawerOnHover"
+               @bind-CollapseOnMouseLeave="_collapseLeftDrawerOnMouseLeave"
                ExpandOnHoverDelay="@_expandOnHoverDelay"
+               CollapseOnMouseLeaveDelay="@_collapseOnMouseLeaveDelay"
                PreventClose="@_preventLeftDrawerClose">
         <KalDrawerHeader>Header</KalDrawerHeader>
         <KalDrawerContent>
@@ -38,6 +41,16 @@
                 <label class="flex items-center gap-2">
                     <input type="checkbox" @bind="_preventLeftDrawerClose" />
                     Schließen verhindern
+                </label>
+
+                <label class="flex flex-col gap-1">
+                    <span>Drawer-Zustand</span>
+                    <select class="rounded border border-slate-300 px-2 py-1"
+                            @bind="_leftDrawerState">
+                        <option value="@KalDrawerState.Hidden">Hidden</option>
+                        <option value="@KalDrawerState.Minimized">Minimized</option>
+                        <option value="@KalDrawerState.Maximized">Maximized</option>
+                    </select>
                 </label>
 
                 <label class="flex items-center gap-2">
@@ -50,12 +63,25 @@
                     Beim Darüberfahren erweitern
                 </label>
 
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" @bind="_collapseLeftDrawerOnMouseLeave" />
+                    Nach Hover wieder schließen
+                </label>
+
                 <label class="flex flex-col gap-1">
                     <span>Hover-Verzögerung in Millisekunden</span>
                     <input type="number"
                            min="0"
                            class="rounded border border-slate-300 px-2 py-1"
                            @bind="_expandOnHoverDelay" />
+                </label>
+
+                <label class="flex flex-col gap-1">
+                    <span>Verzögerung beim Verlassen in Millisekunden</span>
+                    <input type="number"
+                           min="0"
+                           class="rounded border border-slate-300 px-2 py-1"
+                           @bind="_collapseOnMouseLeaveDelay" />
                 </label>
 
                 <label class="flex flex-col gap-1">
@@ -147,10 +173,13 @@
 
 @code {
     private KalDrawerBackdrop _leftDrawerBackdrop = KalDrawerBackdrop.Darkened;
+    private KalDrawerState _leftDrawerState = KalDrawerState.Maximized;
     private bool _preventLeftDrawerClose;
     private bool _minimizeLeftDrawerOnClose;
     private bool _expandLeftDrawerOnHover = true;
+    private bool _collapseLeftDrawerOnMouseLeave = true;
     private int _expandOnHoverDelay = 500;
+    private int _collapseOnMouseLeaveDelay = 300;
 }
 
 <div id="blazor-error-ui" data-nosnippet>

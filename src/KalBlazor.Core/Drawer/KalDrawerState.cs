@@ -1,8 +1,8 @@
 namespace SoftwareThingies.KalBlazor.Core;
 
-internal enum KalDrawerState
+public enum KalDrawerState
 {
-    Closed,
-    Open,
-    Minimized
+    Hidden,
+    Minimized,
+    Maximized
 }

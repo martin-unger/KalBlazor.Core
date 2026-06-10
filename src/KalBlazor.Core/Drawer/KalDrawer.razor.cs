@@ -5,6 +5,12 @@ namespace SoftwareThingies.KalBlazor.Core;
 public partial class KalDrawer : IDisposable
 {
     private CancellationTokenSource? _hoverCancellationTokenSource;
+    private CancellationTokenSource? _mouseLeaveCancellationTokenSource;
+    private bool _maximizedByHover;
+    private bool _hasReceivedInitialState;
+    private bool _isApplyingParameters;
+    private KalDrawerState _lastReceivedInitialState;
+    private KalDrawerState? _lastNotifiedState;
 
     protected override string ComponentClass =>
         $"kal-drawer {(IsMinimized ? "kal-drawer-minimized" : IsOpen ? "kal-drawer-open" : "kal-drawer-closed")}";
@@ -36,6 +42,12 @@ public partial class KalDrawer : IDisposable
     public bool PreventClose { get; set; }
 
     [Parameter]
+    public KalDrawerState InitialState { get; set; } = KalDrawerState.Maximized;
+
+    [Parameter]
+    public EventCallback<KalDrawerState> InitialStateChanged { get; set; }
+
+    [Parameter]
     public bool Minimizable { get; set; }
 
     [Parameter]
@@ -52,6 +64,15 @@ public partial class KalDrawer : IDisposable
 
     [Parameter]
     public int ExpandOnHoverDelay { get; set; } = 500;
+
+    [Parameter]
+    public bool CollapseOnMouseLeave { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<bool> CollapseOnMouseLeaveChanged { get; set; }
+
+    [Parameter]
+    public int CollapseOnMouseLeaveDelay { get; set; } = 500;
 
     [Parameter]
     public string MinimizedWidthClass { get; set; } = "!w-16 !max-w-16";
@@ -174,6 +195,7 @@ public partial class KalDrawer : IDisposable
         if (DrawerContext is not null)
         {
             DrawerContext.StateChanged += StateHasChanged;
+            DrawerContext.DrawerStateChanged += HandleDrawerStateChanged;
         }
     }
 
@@ -181,22 +203,68 @@ public partial class KalDrawer : IDisposable
     {
         if (DrawerContext is not null && TryGetKey(out var key))
         {
-            DrawerContext.Register(
-                key,
-                Side,
-                Width,
-                Variant,
-                Backdrop,
-                PreventClose,
-                Minimizable || MinimizeOnClose,
-                MinimizeOnClose,
-                MinimizedOffsetClass);
+            _isApplyingParameters = true;
+
+            try
+            {
+                DrawerContext.Register(
+                    key,
+                    Side,
+                    Width,
+                    Variant,
+                    Backdrop,
+                    PreventClose,
+                    Minimizable || MinimizeOnClose || InitialState == KalDrawerState.Minimized,
+                    MinimizeOnClose,
+                    MinimizedOffsetClass);
+
+                if (!_hasReceivedInitialState || InitialState != _lastReceivedInitialState)
+                {
+                    DrawerContext.SetState(key, InitialState);
+                    _lastReceivedInitialState = InitialState;
+                    _hasReceivedInitialState = true;
+                }
+
+                _lastNotifiedState = DrawerContext.GetState(key);
+            }
+            finally
+            {
+                _isApplyingParameters = false;
+            }
         }
+    }
+
+    private void HandleDrawerStateChanged(string changedKey)
+    {
+        if (_isApplyingParameters
+            || DrawerContext is null
+            || !TryGetKey(out var key)
+            || !string.Equals(key, changedKey, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var state = DrawerContext.GetState(key);
+
+        if (state != KalDrawerState.Maximized)
+        {
+            _maximizedByHover = false;
+        }
+
+        if (_lastNotifiedState == state)
+        {
+            return;
+        }
+
+        _lastNotifiedState = state;
+        _ = InvokeAsync(() => InitialStateChanged.InvokeAsync(state));
     }
 
     private void ToggleMinimized()
     {
         CancelHoverExpansion();
+        CancelMouseLeaveCollapse();
+        _maximizedByHover = false;
 
         if (DrawerContext is null || !TryGetKey(out var key))
         {
@@ -209,6 +277,7 @@ public partial class KalDrawer : IDisposable
     private void HandleMouseEnter()
     {
         CancelHoverExpansion();
+        CancelMouseLeaveCollapse();
 
         if (!ExpandOnHover
             || !IsMinimized
@@ -233,7 +302,16 @@ public partial class KalDrawer : IDisposable
 
             if (!cancellationTokenSource.IsCancellationRequested && IsMinimized)
             {
-                await InvokeAsync(() => DrawerContext?.Maximize(key));
+                await InvokeAsync(() =>
+                {
+                    if (DrawerContext is null || !IsMinimized)
+                    {
+                        return;
+                    }
+
+                    DrawerContext.Maximize(key);
+                    _maximizedByHover = true;
+                });
             }
         }
         catch (OperationCanceledException)
@@ -253,6 +331,54 @@ public partial class KalDrawer : IDisposable
     private void HandleMouseLeave()
     {
         CancelHoverExpansion();
+
+        if (!CollapseOnMouseLeave
+            || !_maximizedByHover
+            || DrawerContext is null
+            || !TryGetKey(out var key))
+        {
+            return;
+        }
+
+        var cancellationTokenSource = new CancellationTokenSource();
+        _mouseLeaveCancellationTokenSource = cancellationTokenSource;
+        _ = CollapseAfterMouseLeaveDelayAsync(key, cancellationTokenSource);
+    }
+
+    private async Task CollapseAfterMouseLeaveDelayAsync(
+        string key,
+        CancellationTokenSource cancellationTokenSource)
+    {
+        try
+        {
+            await Task.Delay(Math.Max(0, CollapseOnMouseLeaveDelay), cancellationTokenSource.Token);
+
+            if (!cancellationTokenSource.IsCancellationRequested && _maximizedByHover)
+            {
+                await InvokeAsync(() =>
+                {
+                    if (DrawerContext is null || !_maximizedByHover)
+                    {
+                        return;
+                    }
+
+                    _maximizedByHover = false;
+                    DrawerContext.Close(key);
+                });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            if (ReferenceEquals(_mouseLeaveCancellationTokenSource, cancellationTokenSource))
+            {
+                _mouseLeaveCancellationTokenSource = null;
+            }
+
+            cancellationTokenSource.Dispose();
+        }
     }
 
     private void CancelHoverExpansion()
@@ -264,6 +390,17 @@ public partial class KalDrawer : IDisposable
 
         _hoverCancellationTokenSource.Cancel();
         _hoverCancellationTokenSource = null;
+    }
+
+    private void CancelMouseLeaveCollapse()
+    {
+        if (_mouseLeaveCancellationTokenSource is null)
+        {
+            return;
+        }
+
+        _mouseLeaveCancellationTokenSource.Cancel();
+        _mouseLeaveCancellationTokenSource = null;
     }
 
     private bool TryGetKey(out string key)
@@ -287,10 +424,12 @@ public partial class KalDrawer : IDisposable
     public void Dispose()
     {
         CancelHoverExpansion();
+        CancelMouseLeaveCollapse();
 
         if (DrawerContext is not null)
         {
             DrawerContext.StateChanged -= StateHasChanged;
+            DrawerContext.DrawerStateChanged -= HandleDrawerStateChanged;
 
             if (TryGetKey(out var key))
             {
