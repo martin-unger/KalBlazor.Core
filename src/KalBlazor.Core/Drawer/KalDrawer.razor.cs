@@ -26,6 +26,12 @@ public partial class KalDrawer : IDisposable
     [Parameter]
     public KalDrawerVariant Variant { get; set; } = KalDrawerVariant.Overlay;
 
+    [Parameter]
+    public KalDrawerBackdrop Backdrop { get; set; } = KalDrawerBackdrop.Darkened;
+
+    [Parameter]
+    public bool PreventClose { get; set; }
+
     [CascadingParameter]
     internal KalDrawerContext? DrawerContext { get; set; }
 
@@ -99,7 +105,7 @@ public partial class KalDrawer : IDisposable
     {
         if (DrawerContext is not null && TryGetKey(out var key))
         {
-            DrawerContext.Register(key, Side, Width, Variant);
+            DrawerContext.Register(key, Side, Width, Variant, Backdrop, PreventClose);
         }
     }
 

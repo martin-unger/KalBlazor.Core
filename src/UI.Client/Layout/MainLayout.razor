@@ -24,9 +24,35 @@
         </KalCollapsible>
     </KalAppBar>
     
-    <KalDrawer Id="left-menu" Variant="KalDrawerVariant.Overlay">
+    <KalDrawer Id="left-menu"
+               Variant="KalDrawerVariant.Overlay"
+               Backdrop="@_leftDrawerBackdrop"
+               PreventClose="@_preventLeftDrawerClose">
         <KalDrawerHeader>Header</KalDrawerHeader>
         <KalDrawerContent>
+            <div class="mb-6 flex flex-col gap-3 border-b border-slate-200 pb-6">
+                <label class="flex items-center gap-2">
+                    <input type="checkbox" @bind="_preventLeftDrawerClose" />
+                    Schließen verhindern
+                </label>
+
+                <label class="flex flex-col gap-1">
+                    <span>Hintergrund</span>
+                    <select class="rounded border border-slate-300 px-2 py-1"
+                            @bind="_leftDrawerBackdrop">
+                        <option value="@KalDrawerBackdrop.Darkened">Verdunkelt</option>
+                        <option value="@KalDrawerBackdrop.Transparent">Transparent</option>
+                        <option value="@KalDrawerBackdrop.None">Deaktiviert</option>
+                    </select>
+                </label>
+
+                <KalDrawerTrigger TargetId="left-menu"
+                                  Action="KalDrawerTriggerAction.Close"
+                                  AdditionalClass="rounded bg-slate-200 px-3 py-2">
+                    Drawer schließen
+                </KalDrawerTrigger>
+            </div>
+
             <div class="flex flex-col gap-3 text-slate-700">
                 <div class="flex items-center gap-3">
                     <KalIcon Icon="@Icons.AngleDown" AdditionalClass="text-xl border-2" />
@@ -97,6 +123,10 @@
     </KalAppMainContent>
 </KalLayout>  
 
+@code {
+    private KalDrawerBackdrop _leftDrawerBackdrop = KalDrawerBackdrop.Darkened;
+    private bool _preventLeftDrawerClose;
+}
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.

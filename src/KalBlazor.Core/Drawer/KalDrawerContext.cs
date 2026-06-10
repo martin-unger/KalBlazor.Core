@@ -24,6 +24,23 @@ internal sealed class KalDrawerContext
             && _registrations.TryGetValue(state.Key, out var registration)
             && registration.Variant == KalDrawerVariant.Overlay);
 
+    public KalDrawerBackdrop? ActiveBackdrop =>
+        _openStates
+            .Where(state => state.Value)
+            .Select(state => _registrations.TryGetValue(state.Key, out var registration) ? registration : null)
+            .Where(registration => registration is not null && registration.Backdrop != KalDrawerBackdrop.None)
+            .Select(registration => registration!.Backdrop)
+            .OrderBy(backdrop => backdrop)
+            .Cast<KalDrawerBackdrop?>()
+            .FirstOrDefault();
+
+    public bool HasOpenOverlayDrawerWithBackdrop =>
+        _openStates.Any(state =>
+            state.Value
+            && _registrations.TryGetValue(state.Key, out var registration)
+            && registration.Variant == KalDrawerVariant.Overlay
+            && registration.Backdrop != KalDrawerBackdrop.None);
+
     public DrawerWidth? LeftDockedWidth => GetOpenWidth(KalDrawerSide.Left, KalDrawerVariant.Docked);
 
     public DrawerWidth? RightDockedWidth => GetOpenWidth(KalDrawerSide.Right, KalDrawerVariant.Docked);
@@ -44,32 +61,55 @@ internal sealed class KalDrawerContext
 
     public void Close(string key)
     {
+        if (PreventsClose(key))
+        {
+            return;
+        }
+
         SetOpen(key, false);
     }
 
     public void Toggle(string key)
     {
-        SetOpen(key, !IsOpen(key));
+        if (IsOpen(key))
+        {
+            Close(key);
+            return;
+        }
+
+        Open(key);
     }
 
     public void CloseAll()
     {
-        if (!HasOpenDrawers)
-        {
-            return;
-        }
+        var changed = false;
 
         foreach (var key in _openStates.Keys.ToArray())
         {
+            if (!_openStates[key] || PreventsClose(key))
+            {
+                continue;
+            }
+
             _openStates[key] = false;
+            changed = true;
         }
 
-        StateChanged?.Invoke();
+        if (changed)
+        {
+            StateChanged?.Invoke();
+        }
     }
 
-    public void Register(string key, KalDrawerSide side, DrawerWidth width, KalDrawerVariant variant)
+    public void Register(
+        string key,
+        KalDrawerSide side,
+        DrawerWidth width,
+        KalDrawerVariant variant,
+        KalDrawerBackdrop backdrop,
+        bool preventClose)
     {
-        var registration = new KalDrawerRegistration(side, width, variant);
+        var registration = new KalDrawerRegistration(side, width, variant, backdrop, preventClose);
 
         if (_registrations.TryGetValue(key, out var existingRegistration) && existingRegistration == registration)
         {
@@ -127,6 +167,11 @@ internal sealed class KalDrawerContext
         StateChanged?.Invoke();
     }
 
+    private bool PreventsClose(string key)
+    {
+        return _registrations.TryGetValue(key, out var registration) && registration.PreventClose;
+    }
+
     private DrawerWidth? GetOpenWidth(KalDrawerSide side, params KalDrawerVariant[] variants)
     {
         return _openStates
@@ -142,7 +187,12 @@ internal sealed class KalDrawerContext
             .FirstOrDefault();
     }
 
-    private sealed record KalDrawerRegistration(KalDrawerSide Side, DrawerWidth Width, KalDrawerVariant Variant);
+    private sealed record KalDrawerRegistration(
+        KalDrawerSide Side,
+        DrawerWidth Width,
+        KalDrawerVariant Variant,
+        KalDrawerBackdrop Backdrop,
+        bool PreventClose);
 
     private sealed record KalAppBarRegistration(bool Bottom, bool Fixed);
 }
