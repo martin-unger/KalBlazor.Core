@@ -9,25 +9,27 @@
     class="@CssClass"
     @onmouseenter="HandleMouseEnter"
     @onmouseleave="HandleMouseLeave">
-    <CascadingValue Value="this" IsFixed="true">
-        @if (Minimizable && ShowDefaultTrigger)
-        {
-            <button
-                type="button"
-                aria-label="@EffectiveMinimizeButtonAriaLabel"
-                aria-expanded="@(!IsMinimized)"
-                class="@MinimizeButtonCssClass"
-                @onclick="ToggleMinimized">
-                @if (EffectiveButtonContent is not null)
-                {
-                    @EffectiveButtonContent
-                }
-                else
-                {
-                    <KalIcon Icon="@EffectiveButtonIcon" AdditionalClass="@EffectiveButtonIconClass" />
-                }
-            </button>
-        }
-        @ChildContent
+    <CascadingValue Value="CurrentStateContext" IsFixed="false">
+        <CascadingValue Value="this" IsFixed="true">
+            @if (Minimizable && ShowDefaultTrigger)
+            {
+                <button
+                    type="button"
+                    aria-label="@EffectiveMinimizeButtonAriaLabel"
+                    aria-expanded="@(!IsMinimized)"
+                    class="@MinimizeButtonCssClass"
+                    @onclick="ToggleMinimized">
+                    @if (EffectiveButtonContent is not null)
+                    {
+                        @EffectiveButtonContent
+                    }
+                    else
+                    {
+                        <KalIcon Icon="@EffectiveButtonIcon" AdditionalClass="@EffectiveButtonIconClass" />
+                    }
+                </button>
+            }
+            @ChildContent(CurrentStateContext)
+        </CascadingValue>
     </CascadingValue>
 </aside>
