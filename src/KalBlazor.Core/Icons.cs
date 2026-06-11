@@ -15,5 +15,6 @@ public static class Icons
     public const string Search = "search";
     public const string TableCells = "table-cells";
     public const string Trash = "trash";
+    public const string UserKey = "user-key";
     public const string X = "x";
 }
