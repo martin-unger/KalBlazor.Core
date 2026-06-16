@@ -5,13 +5,13 @@ namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 {
     private const string DefaultTableClass = "w-full min-w-full border-collapse text-sm";
-    private const string DefaultHeaderClass = "bg-slate-50";
-    private const string DefaultHeaderRowClass = "border-b border-slate-200";
-    private const string DefaultBodyClass = "divide-y divide-slate-200 bg-white";
-    private const string DefaultRowClass = "transition-colors hover:bg-slate-50";
+    private const string DefaultHeaderClass = "";
+    private const string DefaultHeaderRowClass = "";
+    private const string DefaultBodyClass = "divide-y";
+    private const string DefaultRowClass = "transition-colors";
     protected override string ComponentClass => "kal-data-grid";
 
-    protected override string DefaultClass => "w-full rounded-lg border border-slate-200 bg-white shadow-sm";
+    protected override string DefaultClass => "w-full";
 
     private KalDataGridContext<TItem> GridContext { get; } = new();
 
