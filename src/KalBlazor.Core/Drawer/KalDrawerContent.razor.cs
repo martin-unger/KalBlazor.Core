@@ -6,7 +6,7 @@ public partial class KalDrawerContent
 {
     protected override string ComponentClass => "kal-drawer-content";
 
-    protected override string DefaultClass => "min-h-0 flex-1 overflow-y-auto px-4 py-3";
+    protected override string DefaultClass => "min-h-0 flex-1";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
