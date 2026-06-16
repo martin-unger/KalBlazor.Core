@@ -6,7 +6,7 @@ public partial class KalAppMainContent : IDisposable
 {
     protected override string ComponentClass => "kal-app-main-content";
 
-    protected override string DefaultClass => "w-full mx-auto overflow-y-auto transition-[margin-left,margin-right] duration-200 ease-out";
+    protected override string DefaultClass => "w-full mx-auto transition-[margin-left,margin-right] duration-200 ease-out";
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
