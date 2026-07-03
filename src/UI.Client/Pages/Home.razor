@@ -15,6 +15,32 @@
         </Filter>
 
         <Columns>
+            <KalToggleGridColumn TItem="CustomerAccount"
+                                 HeaderClass="w-24 px-4 py-3"
+                                 AdditionalHeaderClass="bg-slate-50 text-slate-900"
+                                 CellClass="w-24 px-4 py-3 align-top">
+                <CellHeaderTemplate Context="toggle">
+                    <button
+                        type="button"
+                        class="inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        aria-expanded="@toggle.AreAllRowsExpanded"
+                        aria-label="@toggle.AriaLabel"
+                        @onclick="toggle.ToggleAsync">
+                        @(toggle.AreAllRowsExpanded ? "Alle zu" : "Alle auf")
+                    </button>
+                </CellHeaderTemplate>
+                <CellTemplate Context="toggle">
+                    <button
+                        type="button"
+                        class="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-amber-50 hover:text-amber-800"
+                        aria-expanded="@toggle.IsExpanded"
+                        aria-label="@toggle.AriaLabel"
+                        @onclick="toggle.ToggleAsync">
+                        @(toggle.IsExpanded ? "-" : "+")
+                    </button>
+                </CellTemplate>
+            </KalToggleGridColumn>
+
             <KalGridColumn TItem="CustomerAccount"
                            Title="Kunde"
                            Property="@(account => account.Name)"
@@ -157,6 +183,18 @@
                         </CellTemplate>
                     </KalGridColumn>
                 </Columns>
+
+                <ChildRowContent Context="invoice">
+                    <div class="grid gap-2 text-xs text-slate-600 md:grid-cols-2">
+                        @foreach (var line in invoice.Lines)
+                        {
+                            <div class="rounded-md border border-slate-200 bg-white px-3 py-2">
+                                <div class="font-medium text-slate-900">@line.Description</div>
+                                <div>@line.Quantity x @line.UnitPrice.ToString("N0") EUR</div>
+                            </div>
+                        }
+                    </div>
+                </ChildRowContent>
             </KalDataGrid>
         </ChildRowContent>
     </KalDataGrid>
@@ -181,8 +219,8 @@
             "DACH",
             8,
             [
-                new("INV-2026-001", "Januar 2026", 15350, "Bezahlt"),
-                new("INV-2026-002", "Februar 2026", 15350, "Offen")
+                new("INV-2026-001", "Januar 2026", 15350, "Bezahlt", [new("Enterprise Subscription", 1, 15350)]),
+                new("INV-2026-002", "Februar 2026", 15350, "Offen", [new("Enterprise Subscription", 1, 15350)])
             ]),
         new(
             "Northwind Traders",
@@ -200,8 +238,8 @@
             "EU West",
             24,
             [
-                new("INV-2026-014", "Januar 2026", 4320, "Bezahlt"),
-                new("INV-2026-015", "Februar 2026", 4320, "Mahnung")
+                new("INV-2026-014", "Januar 2026", 4320, "Bezahlt", [new("Business Seats", 86, 50)]),
+                new("INV-2026-015", "Februar 2026", 4320, "Mahnung", [new("Business Seats", 86, 50)])
             ]),
         new(
             "Contoso GmbH",
@@ -219,8 +257,8 @@
             "Global",
             3,
             [
-                new("INV-2026-021", "Januar 2026", 41000, "Bezahlt"),
-                new("INV-2026-022", "Februar 2026", 41000, "Offen")
+                new("INV-2026-021", "Januar 2026", 41000, "Bezahlt", [new("Enterprise Plus", 1, 41000)]),
+                new("INV-2026-022", "Februar 2026", 41000, "Offen", [new("Enterprise Plus", 1, 41000)])
             ]),
         new(
             "Fabrikam Logistics",
@@ -238,8 +276,8 @@
             "EU Central",
             41,
             [
-                new("INV-2026-032", "Januar 2026", 2980, "Bezahlt"),
-                new("INV-2026-033", "Februar 2026", 2980, "Mahnung")
+                new("INV-2026-032", "Januar 2026", 2980, "Bezahlt", [new("Business Subscription", 1, 2980)]),
+                new("INV-2026-033", "Februar 2026", 2980, "Mahnung", [new("Business Subscription", 1, 2980)])
             ])
     ];
 
@@ -284,5 +322,11 @@
         string Number,
         string Period,
         decimal Amount,
-        string Status);
+        string Status,
+        IReadOnlyList<CustomerInvoiceLine> Lines);
+
+    private sealed record CustomerInvoiceLine(
+        string Description,
+        int Quantity,
+        decimal UnitPrice);
 }
