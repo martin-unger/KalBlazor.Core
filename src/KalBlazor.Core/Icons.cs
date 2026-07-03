@@ -14,6 +14,7 @@ public static class Icons
     public const string CircleInfo = "circle-info";
     public const string Clapperboard = "clapperboard";
     public const string Document = "document";
+    public const string ExcelDocument = "excel-document";
     public const string ExclamationCircle = "exclamation-circle";
     public const string FileArrowUp = "file-arrow-up";
     public const string FileLines = "file-lines";
@@ -21,7 +22,9 @@ public static class Icons
     public const string Graph = "graph";
     public const string Minus = "minus";
     public const string Pencil = "pencil";
+    public const string PdfDocument = "pdf-document";
     public const string Plus = "plus";
+    public const string Printer = "printer";
     public const string Search = "search";
     public const string TableCells = "table-cells";
     public const string Trash = "trash";
