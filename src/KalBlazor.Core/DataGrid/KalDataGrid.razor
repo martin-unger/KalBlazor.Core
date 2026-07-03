@@ -38,32 +38,79 @@
         {
             <thead class="@HeaderCssClass">
                 <tr class="@HeaderRowCssClass">
-                    @foreach (var column in GridContext.Columns)
+                    @if (HasDefaultChildRowColumn)
                     {
-                        <th class="@GetHeaderCellCssClass(column)" scope="@column.Scope">
-                            @column.HeaderContent
+                        <th class="@ExpandHeaderCellCssClass" scope="col">
+                            @RenderDefaultChildRowHeader()
                         </th>
+                    }
+
+                    @foreach (var entry in GridContext.Entries)
+                    {
+                        @if (entry is KalToggleGridColumn<TItem> childRowColumn)
+                        {
+                            <th class="@childRowColumn.HeaderCssClass" scope="@childRowColumn.Scope">
+                                @RenderChildRowHeader(childRowColumn)
+                            </th>
+                        }
+                        else if (entry is KalGridColumn<TItem> column)
+                        {
+                            <th class="@GetHeaderCellCssClass(column)" scope="@column.Scope">
+                                @column.HeaderContent
+                            </th>
+                        }
                     }
                 </tr>
             </thead>
             <tbody class="@BodyCssClass">
                 @foreach (var item in BoundItems)
                 {
-                    <tr class="@RowCssClass">
-                        @foreach (var column in GridContext.Columns)
-                        {
-                            <td class="@column.CellCssClass">
-                                @column.RenderCell(item)
+                    var isChildRowExpanded = IsChildRowExpanded(item);
 
-                                @if (column.CollapsedContent is not null)
-                                {
-                                    <div class="@column.CollapsedContentCssClass">
-                                        @column.CollapsedContent(item)
-                                    </div>
-                                }
+                    <tr class="@RowCssClass">
+                        @if (HasDefaultChildRowColumn)
+                        {
+                            <td class="@ExpandCellCssClass">
+                                @RenderDefaultChildRowToggle(item, isChildRowExpanded)
                             </td>
                         }
+
+                        @foreach (var entry in GridContext.Entries)
+                        {
+                            @if (entry is KalToggleGridColumn<TItem> childRowColumn)
+                            {
+                                <td class="@childRowColumn.CellCssClass">
+                                    @RenderChildRowToggle(childRowColumn, item, isChildRowExpanded)
+                                </td>
+                            }
+                            else if (entry is KalGridColumn<TItem> column)
+                            {
+                                <td class="@column.CellCssClass">
+                                    @column.RenderCell(item)
+
+                                    @if (column.CollapsedContent is not null)
+                                    {
+                                        <div class="@column.CollapsedContentCssClass">
+                                            @column.CollapsedContent(item)
+                                        </div>
+                                    }
+                                </td>
+                            }
+                        }
                     </tr>
+
+                    @if (HasChildRowContent && isChildRowExpanded)
+                    {
+                        <tr class="@ChildRowCssClass">
+                            <td class="@ChildCellCssClass" colspan="@ChildRowColSpan">
+                                <div class="@ChildContentCssClass">
+                                    <CascadingValue Value="ChildRowExpansionContext" IsFixed="false">
+                                        @ChildRowContent!(item)
+                                    </CascadingValue>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         }
