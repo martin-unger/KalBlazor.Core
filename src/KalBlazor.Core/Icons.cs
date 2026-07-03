@@ -14,6 +14,7 @@ public static class Icons
     public const string CircleInfo = "circle-info";
     public const string Clapperboard = "clapperboard";
     public const string Document = "document";
+    public const string ExclamationCircle = "exclamation-circle";
     public const string FileArrowUp = "file-arrow-up";
     public const string FileLines = "file-lines";
     public const string Filter = "filter";
