@@ -124,6 +124,41 @@
                 </CellTemplate>
             </KalGridColumn>
         </Columns>
+
+        <ChildRowContent Context="account">
+            <KalDataGrid TItem="CustomerInvoice"
+                         Items="@account.Invoices"
+                         TableClass="w-full min-w-full border-collapse text-xs"
+                         HeaderClass="bg-slate-100"
+                         BodyClass="divide-y divide-slate-200"
+                         RowClass="transition-colors hover:bg-slate-50">
+                <Columns>
+                    <KalGridColumn TItem="CustomerInvoice"
+                                   Title="Rechnung"
+                                   Property="@(invoice => invoice.Number)" />
+                    <KalGridColumn TItem="CustomerInvoice"
+                                   Title="Zeitraum"
+                                   Property="@(invoice => invoice.Period)"
+                                   CollapseBelow="KalDataGridBreakpoint.Md" />
+                    <KalGridColumn TItem="CustomerInvoice"
+                                   Title="Betrag"
+                                   Property="@(invoice => invoice.Amount)"
+                                   Alignment="KalDataGridAlignment.End">
+                        <CellTemplate Context="invoice">
+                            @invoice.Amount.ToString("N0") EUR
+                        </CellTemplate>
+                    </KalGridColumn>
+                    <KalGridColumn TItem="CustomerInvoice"
+                                   Title="Status"
+                                   Property="@(invoice => invoice.Status)"
+                                   Alignment="KalDataGridAlignment.End">
+                        <CellTemplate Context="invoice">
+                            <span class="@GetInvoiceStatusClass(invoice.Status)">@invoice.Status</span>
+                        </CellTemplate>
+                    </KalGridColumn>
+                </Columns>
+            </KalDataGrid>
+        </ChildRowContent>
     </KalDataGrid>
 </main>
 
@@ -144,7 +179,11 @@
             "Maria Klein",
             "/team/maria",
             "DACH",
-            8),
+            8,
+            [
+                new("INV-2026-001", "Januar 2026", 15350, "Bezahlt"),
+                new("INV-2026-002", "Februar 2026", 15350, "Offen")
+            ]),
         new(
             "Northwind Traders",
             "/customers/northwind",
@@ -159,7 +198,11 @@
             "Tobias Berger",
             "/team/tobias",
             "EU West",
-            24),
+            24,
+            [
+                new("INV-2026-014", "Januar 2026", 4320, "Bezahlt"),
+                new("INV-2026-015", "Februar 2026", 4320, "Mahnung")
+            ]),
         new(
             "Contoso GmbH",
             "/customers/contoso",
@@ -174,7 +217,11 @@
             "Elena Novak",
             "/team/elena",
             "Global",
-            3),
+            3,
+            [
+                new("INV-2026-021", "Januar 2026", 41000, "Bezahlt"),
+                new("INV-2026-022", "Februar 2026", 41000, "Offen")
+            ]),
         new(
             "Fabrikam Logistics",
             "/customers/fabrikam-logistics",
@@ -189,7 +236,11 @@
             "Jonas Weber",
             "/team/jonas",
             "EU Central",
-            41)
+            41,
+            [
+                new("INV-2026-032", "Januar 2026", 2980, "Bezahlt"),
+                new("INV-2026-033", "Februar 2026", 2980, "Mahnung")
+            ])
     ];
 
     private static string GetStatusClass(string status)
@@ -198,6 +249,16 @@
         {
             "Aktiv" => "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700",
             "Review" => "rounded-full bg-yellow-100 px-2 py-1 text-xs font-medium text-yellow-800",
+            _ => "rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700"
+        };
+    }
+
+    private static string GetInvoiceStatusClass(string status)
+    {
+        return status switch
+        {
+            "Bezahlt" => "rounded-full bg-emerald-100 px-2 py-1 text-xs font-medium text-emerald-700",
+            "Offen" => "rounded-full bg-sky-100 px-2 py-1 text-xs font-medium text-sky-700",
             _ => "rounded-full bg-rose-100 px-2 py-1 text-xs font-medium text-rose-700"
         };
     }
@@ -216,5 +277,12 @@
         string Owner,
         string OwnerUrl,
         string Region,
-        int ChurnRiskPercent);
+        int ChurnRiskPercent,
+        IReadOnlyList<CustomerInvoice> Invoices);
+
+    private sealed record CustomerInvoice(
+        string Number,
+        string Period,
+        decimal Amount,
+        string Status);
 }

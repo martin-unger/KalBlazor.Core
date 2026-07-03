@@ -38,6 +38,13 @@
         {
             <thead class="@HeaderCssClass">
                 <tr class="@HeaderRowCssClass">
+                    @if (HasChildRowContent)
+                    {
+                        <th class="@ExpandHeaderCellCssClass" scope="col">
+                            <span class="sr-only">@ExpandHeaderText</span>
+                        </th>
+                    }
+
                     @foreach (var column in GridContext.Columns)
                     {
                         <th class="@GetHeaderCellCssClass(column)" scope="@column.Scope">
@@ -49,7 +56,23 @@
             <tbody class="@BodyCssClass">
                 @foreach (var item in BoundItems)
                 {
+                    var isChildRowExpanded = IsChildRowExpanded(item);
+
                     <tr class="@RowCssClass">
+                        @if (HasChildRowContent)
+                        {
+                            <td class="@ExpandCellCssClass">
+                                <button
+                                    type="button"
+                                    class="@ExpandButtonCssClass"
+                                    aria-expanded="@isChildRowExpanded"
+                                    aria-label="@GetExpandButtonAriaLabel(isChildRowExpanded)"
+                                    @onclick="@(() => ToggleChildRow(item))">
+                                    <KalIcon Icon="@(isChildRowExpanded ? Icons.AngleDown : Icons.AngleRight)" />
+                                </button>
+                            </td>
+                        }
+
                         @foreach (var column in GridContext.Columns)
                         {
                             <td class="@column.CellCssClass">
@@ -64,6 +87,17 @@
                             </td>
                         }
                     </tr>
+
+                    @if (HasChildRowContent && isChildRowExpanded)
+                    {
+                        <tr class="@ChildRowCssClass">
+                            <td class="@ChildCellCssClass" colspan="@ChildRowColSpan">
+                                <div class="@ChildContentCssClass">
+                                    @ChildRowContent!(item)
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         }
