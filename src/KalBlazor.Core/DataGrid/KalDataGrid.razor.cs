@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Components;
-using SoftwareThingies.KalBlazor.Core;
 
 namespace SoftwareThingies.KalBlazor.Core.DataGrid;
 
 public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 {
+    private const string DescendantFilterOverrideCascadeName = "KalDataGridDescendantFilterOverride";
+    private const string DescendantFilterMatchCascadeName = "KalDataGridDescendantFilterMatch";
     private const string DefaultTableClass = "w-full min-w-full border-collapse text-sm";
     private const string DefaultHeaderClass = "";
     private const string DefaultHeaderRowClass = "";
@@ -22,17 +23,32 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
     protected override string DefaultClass => "w-full";
 
     private readonly HashSet<TItem> _expandedItems = [];
+    private readonly HashSet<TItem> _descendantFilterMatches = [];
     private bool _defaultExpansionApplied;
     private bool? _pendingDescendantExpansion;
     private KalDataGridChildRowExpansionContext? _subscribedParentChildRowExpansionContext;
     private int _lastHandledParentExpansionVersion;
+    private string? _lastFilterStateText;
+    private bool _lastParentFilterOverride;
+    private bool? _lastReportedFilterMatch;
 
     private KalDataGridContext<TItem> GridContext { get; } = new();
 
     private KalDataGridChildRowExpansionContext ChildRowExpansionContext { get; } = new();
 
+    string? IKalDataGridFilterContext.FilterText => InheritedFilterText;
+
     [CascadingParameter]
     private KalDataGridChildRowExpansionContext? ParentChildRowExpansionContext { get; set; }
+
+    [CascadingParameter]
+    private IKalDataGridFilterContext? ParentFilterContext { get; set; }
+
+    [CascadingParameter(Name = DescendantFilterOverrideCascadeName)]
+    private bool ParentFilterOverride { get; set; }
+
+    [CascadingParameter(Name = DescendantFilterMatchCascadeName)]
+    private KalDataGridDescendantFilterMatchContext? ParentDescendantFilterMatchContext { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
@@ -189,9 +205,15 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
         }
     }
 
-    private IEnumerable<TItem> BoundItems => string.IsNullOrWhiteSpace(FilterText)
-        ? Items ?? []
-        : (Items ?? []).Where(ItemMatchesFilter);
+    private string? InheritedFilterText => string.IsNullOrWhiteSpace(FilterText)
+        ? ParentFilterContext?.FilterText
+        : FilterText;
+
+    private bool HasActiveFilter => !string.IsNullOrWhiteSpace(InheritedFilterText);
+
+    private string? EffectiveFilterText => ParentFilterOverride ? null : InheritedFilterText;
+
+    private IEnumerable<TItem> BoundItems => (Items ?? []).Where(IsItemVisible);
 
     private string TableCssClass => $"{(string.IsNullOrWhiteSpace(TableClass) ? DefaultTableClass : TableClass)} {AdditionalTableClass}".Trim();
 
@@ -222,10 +244,102 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 
     private string ChildContentCssClass => $"{(string.IsNullOrWhiteSpace(ChildContentClass) ? DefaultChildContentClass : ChildContentClass)} {AdditionalChildContentClass}".Trim();
 
-    private bool ItemMatchesFilter(TItem item)
+    private IEnumerable<TItem> DescendantFilterProbeItems => HasChildRowContent && !ParentFilterOverride && HasActiveFilter
+        ? (Items ?? []).Where(item => !IsLocalFilterMatch(item))
+        : [];
+
+    private bool ItemMatchesFilter(TItem item, string filterText)
     {
         return GridContext.Columns.Any(column =>
-            column.GetSearchText(item).Contains(FilterText!, StringComparison.CurrentCultureIgnoreCase));
+            column.GetSearchText(item).Contains(filterText, StringComparison.CurrentCultureIgnoreCase));
+    }
+
+    private bool IsLocalFilterMatch(TItem item)
+    {
+        return !string.IsNullOrWhiteSpace(EffectiveFilterText)
+            && ItemMatchesFilter(item, EffectiveFilterText!);
+    }
+
+    private bool HasDescendantFilterMatch(TItem item)
+    {
+        return _descendantFilterMatches.Contains(item);
+    }
+
+    private bool IsItemVisible(TItem item)
+    {
+        if (string.IsNullOrWhiteSpace(EffectiveFilterText))
+        {
+            return true;
+        }
+
+        return IsLocalFilterMatch(item) || HasDescendantFilterMatch(item);
+    }
+
+    private bool ShouldOverrideDescendantFilter(TItem item)
+    {
+        if (ParentFilterOverride)
+        {
+            return true;
+        }
+
+        return !string.IsNullOrWhiteSpace(InheritedFilterText)
+            && ItemMatchesFilter(item, InheritedFilterText!);
+    }
+
+    private bool ShouldShowChildRow(TItem item)
+    {
+        if (!HasChildRowContent)
+        {
+            return false;
+        }
+
+        return IsChildRowExpanded(item)
+            || (HasActiveFilter && (ShouldOverrideDescendantFilter(item) || HasDescendantFilterMatch(item)));
+    }
+
+    private KalDataGridDescendantFilterMatchContext CreateDescendantFilterMatchContext(TItem item)
+    {
+        return new KalDataGridDescendantFilterMatchContext(hasMatch => ReportDescendantFilterMatch(item, hasMatch));
+    }
+
+    private void ReportDescendantFilterMatch(TItem item, bool hasMatch)
+    {
+        var current = HasDescendantFilterMatch(item);
+        if (current == hasMatch)
+        {
+            return;
+        }
+
+        if (hasMatch)
+        {
+            _descendantFilterMatches.Add(item);
+        }
+        else
+        {
+            _descendantFilterMatches.Remove(item);
+        }
+
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void ReportFilterMatchToParent()
+    {
+        if (ParentDescendantFilterMatchContext is null)
+        {
+            return;
+        }
+
+        var hasMatch = ParentFilterOverride
+            ? (Items?.Any() ?? false)
+            : BoundItems.Any();
+
+        if (_lastReportedFilterMatch == hasMatch)
+        {
+            return;
+        }
+
+        _lastReportedFilterMatch = hasMatch;
+        ParentDescendantFilterMatchContext.ReportMatch(hasMatch);
     }
 
     private bool IsChildRowExpanded(TItem item)
@@ -390,6 +504,15 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 
     protected override void OnParametersSet()
     {
+        if (_lastParentFilterOverride != ParentFilterOverride
+            || !string.Equals(_lastFilterStateText, InheritedFilterText, StringComparison.Ordinal))
+        {
+            _descendantFilterMatches.Clear();
+            _lastReportedFilterMatch = null;
+            _lastFilterStateText = InheritedFilterText;
+            _lastParentFilterOverride = ParentFilterOverride;
+        }
+
         if (!ReferenceEquals(_subscribedParentChildRowExpansionContext, ParentChildRowExpansionContext))
         {
             if (_subscribedParentChildRowExpansionContext is not null)
@@ -426,10 +549,14 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
         }
 
         _defaultExpansionApplied = true;
+
+        ReportFilterMatchToParent();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        ReportFilterMatchToParent();
+
         if (_pendingDescendantExpansion is not { } isExpanded)
         {
             return;
