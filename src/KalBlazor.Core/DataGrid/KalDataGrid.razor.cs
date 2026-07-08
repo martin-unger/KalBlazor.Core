@@ -28,7 +28,9 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
     private bool? _pendingDescendantExpansion;
     private KalDataGridChildRowExpansionContext? _subscribedParentChildRowExpansionContext;
     private int _lastHandledParentExpansionVersion;
+    private string? _currentFilterText;
     private string? _lastFilterStateText;
+    private string? _lastFilterTextParameter;
     private bool _lastParentFilterOverride;
     private bool? _lastReportedFilterMatch;
 
@@ -205,9 +207,9 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
         }
     }
 
-    private string? InheritedFilterText => string.IsNullOrWhiteSpace(FilterText)
+    private string? InheritedFilterText => string.IsNullOrWhiteSpace(_currentFilterText)
         ? ParentFilterContext?.FilterText
-        : FilterText;
+        : _currentFilterText;
 
     private bool HasActiveFilter => !string.IsNullOrWhiteSpace(InheritedFilterText);
 
@@ -482,14 +484,13 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 
     async Task IKalDataGridFilterContext.SetFilterTextAsync(string? filterText)
     {
-        FilterText = filterText;
+        _currentFilterText = filterText;
+        await InvokeAsync(StateHasChanged);
 
         if (FilterTextChanged.HasDelegate)
         {
-            await FilterTextChanged.InvokeAsync(FilterText);
+            await FilterTextChanged.InvokeAsync(_currentFilterText);
         }
-
-        await InvokeAsync(StateHasChanged);
     }
 
     Task IKalDataGridFilterContext.ClearFilterTextAsync()
@@ -504,6 +505,12 @@ public partial class KalDataGrid<TItem> : IDisposable, IKalDataGridFilterContext
 
     protected override void OnParametersSet()
     {
+        if (!string.Equals(FilterText, _lastFilterTextParameter, StringComparison.Ordinal))
+        {
+            _currentFilterText = FilterText;
+            _lastFilterTextParameter = FilterText;
+        }
+
         if (_lastParentFilterOverride != ParentFilterOverride
             || !string.Equals(_lastFilterStateText, InheritedFilterText, StringComparison.Ordinal))
         {
